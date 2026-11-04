@@ -1,1 +1,66 @@
-export default () => { const W = 160, y0 = 64, H = 140, ym = 134; const edge = 'var(--cds-chart-axis)', rule = 'var(--cds-chart-grid)', accent = 'var(--cds-chart-categorical-1)', ink = 'var(--cds-text-primary)', quiet = 'var(--cds-text-secondary)'; const px = i => 24 + i * 184; const box = (i, main) => <g><rect x={px(i)} y={y0} width={W} height={H} rx='8' fill={main ? accent : 'none'} fillOpacity={main ? 0.12 : 1} stroke={main ? accent : edge} strokeWidth={main ? 2 : 1.25}/><line x1={px(i) + 16} x2={px(i) + W - 16} y1={y0 + 52} y2={y0 + 52} stroke={rule}/></g>; const gate = bx => <g><line x1={bx - 12} x2={bx + 12} y1={ym} y2={ym} stroke={edge} strokeWidth='1.25'/><line x1={bx} x2={bx} y1={ym + 7} y2='218' stroke={edge} strokeWidth='1' strokeDasharray='3 3'/><path d={`M${bx} ${ym - 7}l7 7l-7 7l-7 -7z`} fill={edge}/></g>; return <svg viewBox='0 0 760 288' role='img' aria-label='Start with F1 to F4, then prove fixes in a sandbox before adding more' fontSize='13'><text x='24' y='28' fontSize='15' fontWeight='600' fill={ink}>Start with F1–F4, then prove fixes in a sandbox before adding more</text><text x='24' y='46' fontSize='11.5' fill={quiet}>Phases in order; no dates set yet</text><g>{box(0, true)}<text x='104' y={y0 + 24} textAnchor='middle' fontWeight='600' fill={ink}>MVP</text><text x='104' y={y0 + 42} textAnchor='middle' fontSize='11.5' fill={quiet}>Gap → fix → test</text><text x='40' y={y0 + 74} fontSize='11.5' fill={ink}>F1 Gap mining</text><text x='40' y={y0 + 92} fontSize='11.5' fill={ink}>F2 Diagnose and fix</text><text x='40' y={y0 + 110} fontSize='11.5' fill={ink}>F3 Change diffs</text><text x='40' y={y0 + 128} fontSize='11.5' fill={ink}>F4 Test generation</text></g><g>{box(1, false)}<text x='288' y={y0 + 24} textAnchor='middle' fontWeight='600' fill={ink}>Phase 2</text><text x='288' y={y0 + 42} textAnchor='middle' fontSize='11.5' fill={quiet}>Prove and build</text><text x='224' y={y0 + 74} fontSize='11.5' fill={ink}>F5 Simulation</text><text x='224' y={y0 + 92} fontSize='11.5' fill={ink}>F6 Auto-fix loop</text><text x='224' y={y0 + 110} fontSize='11.5' fill={ink}>F7 Build from SOPs</text></g><g>{box(2, false)}<text x='472' y={y0 + 24} textAnchor='middle' fontWeight='600' fill={ink}>Phase 3</text><text x='472' y={y0 + 42} textAnchor='middle' fontSize='11.5' fill={quiet}>Voice and operations</text><text x='408' y={y0 + 74} fontSize='11.5' fill={ink}>F9 Voice QA</text><text x='408' y={y0 + 92} fontSize='11.5' fill={ink}>F10 Release monitor</text><text x='408' y={y0 + 110} fontSize='11.5' fill={ink}>F11 Team loop</text><text x='408' y={y0 + 128} fontSize='11.5' fill={ink}>F12 Unmet intents</text></g><g>{box(3, false)}<text x='656' y={y0 + 24} textAnchor='middle' fontWeight='600' fill={ink}>Phase 4</text><text x='656' y={y0 + 42} textAnchor='middle' fontSize='11.5' fill={quiet}>Edit by request</text><text x='592' y={y0 + 74} fontSize='11.5' fill={ink}>F8 NL editing</text></g><g>{gate(196)}<text x='196' y='234' textAnchor='middle' fontSize='11.5' fontWeight='600' fill={ink}>Gate 1</text><text x='196' y='250' textAnchor='middle' fontSize='11.5' fill={quiet}>New tests fail today;</text><text x='196' y='266' textAnchor='middle' fontSize='11.5' fill={quiet}>humans accept fixes</text></g><g>{gate(380)}<text x='380' y='234' textAnchor='middle' fontSize='11.5' fontWeight='600' fill={ink}>Gate 2</text><text x='380' y='250' textAnchor='middle' fontSize='11.5' fill={quiet}>Fixes pass in sandbox,</text><text x='380' y='266' textAnchor='middle' fontSize='11.5' fill={quiet}>no regressions</text></g><g>{gate(564)}<text x='564' y='234' textAnchor='middle' fontSize='11.5' fontWeight='600' fill={ink}>Gate 3</text><text x='564' y='250' textAnchor='middle' fontSize='11.5' fill={quiet}>Validation gate</text><text x='564' y='266' textAnchor='middle' fontSize='11.5' fill={quiet}>trusted by the team</text></g></svg>; };
+// Phased roadmap: chevron phase headers, feature cards, gate track.
+const RED = '#D0271D', RED_TINT = '#FDF0EF', INK = '#1F1F1F', MUTED = '#5C5C5C', LINE = '#DADADA', SURF = '#F4F5F6', WHITE = '#FFFFFF';
+const SLATES = ['#2E3338', '#40464C', '#555B61'];
+
+const X0 = 24, W = 216, GAP = 16, D = 14, HY = 76, HH = 58, CY = 146, CH = 160;
+const colX = (i) => X0 + i * (W + GAP);
+
+const PHASES = [
+  { eyebrow: 'PHASE 1 · MVP', title: 'Gap → fix → test', items: [['F1', 'Gap mining'], ['F2', 'Diagnose and fix'], ['F3', 'Change drafting (diffs)'], ['F4', 'Test generation']] },
+  { eyebrow: 'PHASE 2', title: 'Prove and build', items: [['F5', 'Simulation in sandbox'], ['F6', 'Auto-fix loop'], ['F7', 'Build agent from SOPs']] },
+  { eyebrow: 'PHASE 3', title: 'Voice and operations', items: [['F9', 'Voice-specific QA'], ['F10', 'Release monitoring'], ['F11', 'Team approval loop'], ['F12', 'Unmet intent discovery']] },
+  { eyebrow: 'PHASE 4', title: 'Edit by request', items: [['F8', 'Natural-language editing']] },
+];
+const GATES = [
+  ['GATE 1', 'New tests fail on today’s agent;', 'reviewers accept the fixes'],
+  ['GATE 2', 'Fixes pass in the sandbox', 'with no regressions'],
+  ['GATE 3', 'Validation gate trusted', 'by the team'],
+];
+
+const chevron = (i, fill) => {
+  const l = colX(i), r = l + W, y = HY, h = HH;
+  const pts = [[l, y], [r, y], [r + D, y + h / 2], [r, y + h], [l, y + h], [l + (i ? D : 0), y + h / 2]];
+  return <polygon points={pts.map((p) => p.join(',')).join(' ')} fill={fill}/>;
+};
+
+export default () => (
+  <svg viewBox='0 0 960 432' role='img' aria-label='Roadmap: start with F1 to F4, prove and build in Phase 2, then voice and operations, then editing by request' fontSize='13'>
+    <defs>
+      <filter id='rm-sh' x='-10%' y='-10%' width='120%' height='130%'><feDropShadow dx='0' dy='1.5' stdDeviation='2' floodColor='#000' floodOpacity='0.08'/></filter>
+    </defs>
+    <text x='24' y='30' fontSize='17' fontWeight='700' fill={INK}>Start with F1–F4, then prove and build in a sandbox before adding more</text>
+    <text x='24' y='52' fontSize='12.5' fill={MUTED}>Four phases in order · each gate must pass before the next phase starts · no dates set yet</text>
+
+    {PHASES.map((p, i) => (
+      <g>
+        {chevron(i, i === 0 ? RED : SLATES.at(Math.min(i - 1, 2)))}
+        <text x={colX(i) + (i ? D : 0) + 16} y={HY + 23} fontSize='10.5' fontWeight='700' letterSpacing='1.2' fill={WHITE} fillOpacity='0.85'>{p.eyebrow}</text>
+        <text x={colX(i) + (i ? D : 0) + 16} y={HY + 43} fontSize='15' fontWeight='700' fill={WHITE}>{p.title}</text>
+        <rect x={colX(i)} y={CY} width={W} height={CH} rx='10' fill={WHITE} stroke={i === 0 ? RED : LINE} strokeWidth={i === 0 ? 1.5 : 1} filter='url(#rm-sh)'/>
+        {p.items.map(([id, name], k) => (
+          <g>
+            <rect x={colX(i) + 14} y={CY + 18 + k * 34} width='40' height='22' rx='11' fill={i === 0 ? RED_TINT : SURF}/>
+            <text x={colX(i) + 34} y={CY + 33 + k * 34} textAnchor='middle' fontSize='11' fontWeight='700' fill={i === 0 ? RED : SLATES.at(0)}>{id}</text>
+            <text x={colX(i) + 64} y={CY + 33.5 + k * 34} fontSize='13' fill={INK}>{name}</text>
+          </g>
+        ))}
+      </g>
+    ))}
+
+    <line x1={X0} x2={X0 + 4 * W + 3 * GAP} y1='342' y2='342' stroke={LINE} strokeWidth='2'/>
+    <circle cx={X0} cy='342' r='4' fill={RED}/>
+    <circle cx={X0 + 4 * W + 3 * GAP} cy='342' r='4' fill={SLATES.at(2)}/>
+    {GATES.map(([name, a, b], i) => {
+      const x = colX(i) + W + GAP / 2;
+      return (
+        <g>
+          <line x1={x} x2={x} y1={CY + CH + 6} y2='333' stroke={LINE} strokeWidth='1' strokeDasharray='3 3'/>
+          <path d={`M${x} 332l10 10l-10 10l-10 -10z`} fill={WHITE} stroke={SLATES.at(0)} strokeWidth='1.75'/>
+          <text x={x} y='374' textAnchor='middle' fontSize='11' fontWeight='700' letterSpacing='1' fill={SLATES.at(0)}>{name}</text>
+          <text x={x} y='392' textAnchor='middle' fontSize='12' fill={MUTED}>{a}</text>
+          <text x={x} y='408' textAnchor='middle' fontSize='12' fill={MUTED}>{b}</text>
+        </g>
+      );
+    })}
+  </svg>
+);

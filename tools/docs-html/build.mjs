@@ -83,7 +83,7 @@ function convert(md) {
 // ---------- mermaid -> svg (headless browser) ----------
 
 // Tiny JSX-to-string runtime for the designed diagrams (SVG only).
-const KEEP_CASE = new Set(['viewBox', 'refX', 'refY', 'markerWidth', 'markerHeight']);
+const KEEP_CASE = new Set(['viewBox', 'refX', 'refY', 'markerWidth', 'markerHeight', 'stdDeviation']);
 const esc = (v) => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 function h(tag, props, ...children) {
   const attrs = Object.entries(props || {})
@@ -163,7 +163,7 @@ li.task{list-style:none;margin-left:-22px;display:flex;gap:10px;align-items:flex
 li.task .box{flex:none;width:16px;height:16px;margin-top:4px;border:2px solid var(--red);border-radius:3px}
 li.task .box.on{background:var(--red)}
 .diagram{margin:20px 0 24px;padding:20px;border:1px solid var(--line);border-radius:10px;background:var(--bg);overflow-x:auto;text-align:center}
-.diagram{max-width:860px}.diagram svg{width:100%;height:auto;font-family:inherit}
+.diagram{max-width:1000px}.diagram svg{width:100%;height:auto;font-family:inherit}
 footer{border-top:1px solid var(--line);color:var(--muted);font-size:13px}
 footer .inner{max-width:1240px;margin:0 auto;padding:20px 24px}
 .hero{background:linear-gradient(0deg,var(--surface),var(--surface));border-bottom:1px solid var(--line)}
