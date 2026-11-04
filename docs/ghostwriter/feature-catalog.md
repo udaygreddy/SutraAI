@@ -22,11 +22,11 @@ Four of the twelve features reuse KGG heavily. Those four form the MVP.
 | F4 | Test generation | Turn each recurring failure into regression test cases | Medium | MVP |
 | F5 | Simulation and validation | Run tests and simulated callers against a sandbox agent, before and after a change | Low | Phase 2 |
 | F6 | Auto-fix loop | Diagnose a failed simulation, revise the fix, re-simulate within a budget | Medium | Phase 2 |
+| F7 | Build agent from SOPs | Generate topics, instructions, action stubs and seed tests from SOPs or transcripts | Low | Phase 2 |
 | F9 | Voice-specific QA | Check TTS-friendliness, length, barge-in, silence, ASR mishears, transfers | Low | Phase 3 |
 | F10 | Release monitoring and experiments | Confirm a shipped fix stops the gap recurring; flag regressions | Medium | Phase 3 |
 | F11 | Team loop | Send evidence and proposed changes to Slack or Teams for approval, then follow up | Medium | Phase 3 |
 | F12 | Opportunity discovery | Find intents the agent cannot route or handle at all | Medium | Phase 3 |
-| F7 | Build agent from SOPs | Generate topics, instructions, action stubs and seed tests from SOPs or transcripts | Low | Phase 4 |
 | F8 | Natural-language editing | Turn a plain-language request into a metadata diff plus tests | Low to medium | Phase 4 |
 
 ## Feature details
@@ -101,7 +101,7 @@ Each card gives what the feature does, its inputs and outputs, where it touches 
 - **Agentforce touchpoints:** `sf agent generate agent-spec`, `sf agent create`, topic and action metadata.
 - **Voice points:** greeting, verification, confirmation-readback and transfer patterns built in.
 - **KGG reuse:** low. New generation path; reuses prompts and validation patterns.
-- **Depends on:** F4 and F5, to validate what it builds.
+- **Depends on:** F4 for seed tests; F5, in the same phase, validates what it builds.
 
 ### F8 — Natural-language editing
 
@@ -155,22 +155,23 @@ Each card gives what the feature does, its inputs and outputs, where it touches 
 
 ## Recommended start and roadmap
 
-Start with F1–F4. They run on data we already have and produce fixes plus tests that people can check by hand in Testing Center. Phase 2 automates that check in a sandbox, and that is the step that makes this a Ghostwriter.
+Start with F1–F4. They run on data we already have and produce fixes plus tests that people can check by hand in Testing Center. Phase 2 automates that check in a sandbox and adds building agents from SOPs (F7). Together, that is the step that makes this a Ghostwriter.
 
+<!-- diagram: roadmap -->
 ```mermaid
 flowchart LR
   MVP["<b>MVP</b><br/>Gap → fix → test<br/>F1 Gap mining<br/>F2 Diagnose and fix<br/>F3 Change diffs<br/>F4 Test generation"]
-  P2["<b>Phase 2</b><br/>Prove in sandbox<br/>F5 Simulation<br/>F6 Auto-fix loop"]
+  P2["<b>Phase 2</b><br/>Prove and build<br/>F5 Simulation<br/>F6 Auto-fix loop<br/>F7 Build from SOPs"]
   P3["<b>Phase 3</b><br/>Voice and operations<br/>F9 Voice QA<br/>F10 Release monitor<br/>F11 Team loop<br/>F12 Unmet intents"]
-  P4["<b>Phase 4</b><br/>Build and edit<br/>F7 Build from SOPs<br/>F8 NL editing"]
+  P4["<b>Phase 4</b><br/>Edit by request<br/>F8 NL editing"]
   MVP -- "Gate 1: new tests fail today;<br/>humans accept fixes" --> P2
   P2 -- "Gate 2: fixes pass in sandbox,<br/>no regressions" --> P3
   P3 -- "Gate 3: validation gate<br/>trusted by the team" --> P4
 ```
 
-Each gate must pass before the next phase starts. F7 and F8 come last because they rely on the F5 validation gate to prove what they build.
+Each gate must pass before the next phase starts. F7 sits in Phase 2 next to F5, so every agent it builds is proven in the sandbox before review. F8 comes last.
 
-> Update: F7 was later pulled forward into the first build alongside F1–F4. See [architecture-design-f1-f4-f7.md](architecture-design-f1-f4-f7.md).
+The first build's design (F1–F4 plus F7) is in [architecture-design-f1-f4-f7.md](architecture-design-f1-f4-f7.md).
 
 ## Open questions
 

@@ -1,0 +1,998 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ghostwriter for Agentforce Voice: Architecture and Design (F1–F4, F7)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--cds-chart-axis:#8A8A8A;--cds-chart-grid:#E2E2E2;--cds-chart-categorical-1:#D0271D;--cds-text-primary:#1F1F1F;--cds-text-secondary:#5C5C5C;--cds-chart-reference-tint:#F6F6F6;--red:#D0271D;--red-dark:#A41F17;--red-tint:#FBEAE9;--ink:#1F1F1F;--muted:#5C5C5C;--line:#E2E2E2;--surface:#F6F6F6;--bg:#FFFFFF;}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Roboto,"Segoe UI",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--red-dark);text-decoration:none}a:hover{text-decoration:underline}
+.topbar{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line)}
+.topbar .accent{height:4px;background:var(--red)}
+.topbar .inner{max-width:1240px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;color:var(--ink)}
+.brand .mark{width:28px;height:28px;border-radius:6px;background:var(--red);color:#fff;display:grid;place-items:center;font-size:15px;font-weight:700}
+.brand small{font-weight:400;color:var(--muted);font-size:14px}
+nav.main{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+nav.main a{color:var(--ink);padding:6px 12px;border-radius:999px;font-size:14px;font-weight:500}
+nav.main a:hover{background:var(--surface);text-decoration:none}
+nav.main a.active{background:var(--red);color:#fff}
+.layout{max-width:1240px;margin:0 auto;padding:32px 24px 64px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:48px}
+aside.toc{position:sticky;top:84px;align-self:start;max-height:calc(100vh - 100px);overflow:auto;font-size:13.5px;border-left:2px solid var(--line);padding-left:14px}
+aside.toc .label{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+aside.toc a{display:block;color:var(--muted);padding:3px 0;line-height:1.35}
+aside.toc a.l3{padding-left:12px;font-size:13px}
+aside.toc a:hover{color:var(--red-dark);text-decoration:none}
+main{min-width:0}
+main h1{font-size:34px;line-height:1.2;margin:0 0 8px;letter-spacing:-.01em}
+.byline{color:var(--muted);font-size:14px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+main h2{font-size:24px;margin:44px 0 12px;padding-top:8px;scroll-margin-top:90px;position:relative}
+main h2::before{content:"";position:absolute;left:-16px;top:16px;width:4px;height:22px;background:var(--red);border-radius:2px}
+main h3{font-size:18.5px;margin:28px 0 8px;scroll-margin-top:90px}
+main p,main li{max-width:78ch}
+code{font:13.5px/1.4 "Roboto Mono",Consolas,monospace;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:1px 5px;word-break:break-word}
+.table-wrap{overflow-x:auto;margin:16px 0 20px;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{background:var(--ink);color:#fff;text-align:left;font-weight:600;padding:10px 12px;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tbody tr:nth-child(even) td{background:var(--surface)}
+td code{font-size:12.5px}
+blockquote{margin:16px 0;padding:10px 16px;border-left:4px solid var(--red);background:var(--red-tint);border-radius:0 6px 6px 0}
+li.task{list-style:none;margin-left:-22px;display:flex;gap:10px;align-items:flex-start}
+li.task .box{flex:none;width:16px;height:16px;margin-top:4px;border:2px solid var(--red);border-radius:3px}
+li.task .box.on{background:var(--red)}
+.diagram{margin:20px 0 24px;padding:20px;border:1px solid var(--line);border-radius:10px;background:var(--bg);overflow-x:auto;text-align:center}
+.diagram{max-width:860px}.diagram svg{width:100%;height:auto;font-family:inherit}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+footer .inner{max-width:1240px;margin:0 auto;padding:20px 24px}
+.hero{background:linear-gradient(0deg,var(--surface),var(--surface));border-bottom:1px solid var(--line)}
+.hero .inner{max-width:1240px;margin:0 auto;padding:56px 24px 48px}
+.hero .eyebrow{color:var(--red);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px}
+.hero h1{font-size:40px;line-height:1.15;margin:8px 0 12px;max-width:22ch}
+.hero p{font-size:18px;color:var(--muted);max-width:62ch;margin:0}
+.cards{max-width:1240px;margin:0 auto;padding:40px 24px 64px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.card{display:block;border:1px solid var(--line);border-top:4px solid var(--red);border-radius:10px;padding:24px;color:var(--ink);background:var(--bg);transition:box-shadow .15s,transform .15s}
+.card:hover{text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.08);transform:translateY(-2px)}
+.card h2{margin:0 0 8px;font-size:21px}
+.card p{margin:0 0 16px;color:var(--muted)}
+.card .go{color:var(--red-dark);font-weight:600}
+@media (max-width:900px){.layout{grid-template-columns:1fr;gap:0}aside.toc{display:none}main h2::before{display:none}.topbar .inner{padding:10px 16px}.layout,.cards,.hero .inner{padding-left:16px;padding-right:16px}main h1,.hero h1{font-size:28px}}
+@media print{.topbar,aside.toc{display:none}.layout{display:block}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="accent"></div><div class="inner">
+<a class="brand" href="index.html"><span class="mark">S</span>SutraAI <small>Ghostwriter for Agentforce Voice</small></a>
+<nav class="main"><a href="index.html">Overview</a><a href="feature-catalog.html">Feature catalog</a><a href="architecture-design-f1-f4-f7.html" class="active">Architecture and design</a></nav>
+</div></header>
+<div class="layout"><aside class="toc"><div class="label">On this page</div><a class="l2" href="#1-purpose-and-scope">1. Purpose and scope</a><a class="l2" href="#2-design-principles">2. Design principles</a><a class="l2" href="#3-system-overview">3. System overview</a><a class="l2" href="#4-repository-layout-and-module-map">4. Repository layout and module map</a><a class="l2" href="#5-data-contracts">5. Data contracts</a><a class="l3" href="#5-1-inputs">5.1 Inputs</a><a class="l3" href="#5-2-outputs">5.2 Outputs</a><a class="l2" href="#6-f1-gap-mining">6. F1 — Gap mining</a><a class="l3" href="#6-1-session-level-exclusion">6.1 Session-level exclusion</a><a class="l3" href="#6-2-partitioning">6.2 Partitioning</a><a class="l3" href="#6-3-claim-extraction-and-comparison-1-llm-call-per-session">6.3 Claim extraction and comparison (1 LLM call per session)</a><a class="l3" href="#6-4-gap-pool-and-stop-claim-filter">6.4 Gap pool and stop-claim filter</a><a class="l3" href="#6-5-aggregation-verification-and-recurrence">6.5 Aggregation, verification and recurrence</a><a class="l2" href="#7-f2-diagnose-and-propose-fix">7. F2 — Diagnose and propose fix</a><a class="l3" href="#7-1-steps">7.1 Steps</a><a class="l3" href="#7-2-change-types-and-outcomes">7.2 Change types and outcomes</a><a class="l3" href="#7-3-validation-rules-model-output-is-a-proposal">7.3 Validation rules (model output is a proposal)</a><a class="l2" href="#8-f3-change-drafting">8. F3 — Change drafting</a><a class="l3" href="#8-1-drafting-per-target">8.1 Drafting per target</a><a class="l3" href="#8-2-acceptance-check-and-fallback">8.2 Acceptance check and fallback</a><a class="l3" href="#8-3-voice-lint-deterministic">8.3 Voice lint (deterministic)</a><a class="l3" href="#8-4-metadata-round-trip">8.4 Metadata round trip</a><a class="l2" href="#9-f4-test-generation">9. F4 — Test generation</a><a class="l3" href="#9-1-what-a-test-case-holds">9.1 What a test case holds</a><a class="l3" href="#9-2-utterance-generation-1-llm-call-per-theme">9.2 Utterance generation (1 LLM call per theme)</a><a class="l3" href="#9-3-output-format">9.3 Output format</a><a class="l3" href="#9-4-prechecks-deterministic">9.4 Prechecks (deterministic)</a><a class="l2" href="#10-f7-build-agent-from-sops">10. F7 — Build agent from SOPs</a><a class="l3" href="#10-1-steps">10.1 Steps</a><a class="l3" href="#10-2-build-specific-prechecks">10.2 Build-specific prechecks</a><a class="l2" href="#11-ai-review-extensions">11. AI review extensions</a><a class="l2" href="#12-review-tooling">12. Review tooling</a><a class="l2" href="#13-configuration-and-failure-model">13. Configuration and failure model</a><a class="l2" href="#14-safety-and-governance">14. Safety and governance</a><a class="l2" href="#15-testing-strategy-and-pilot">15. Testing strategy and pilot</a><a class="l2" href="#16-open-decisions-and-risks">16. Open decisions and risks</a></aside><main><h1 id="ghostwriter-for-agentforce-voice-architecture-and-design-f1-f4-f7">Ghostwriter for Agentforce Voice: Architecture and Design (F1–F4, F7)</h1>
+<div class="byline">Nov 3, 2026 · Uday Gangireddy · Live, editable version: <a href="https://claude.ai/artifact/AkZjX4czE9Wqd85c6qJrNP" target="_blank" rel="noopener">Claude Doc</a></div>
+<p>This design extends the Knowledge Gap Generation (KGG) pipeline into an agent that improves Agentforce voice agents from live sessions (F1–F4) and builds new ones from SOPs (F7). It reuses KGG&#39;s core and adds an Agentforce domain pack, a test generator and a build pipeline. Every change it makes is a reviewable diff; it never deploys to production.</p>
+<h2 id="1-purpose-and-scope">1. Purpose and scope</h2>
+<p>The system has two entry paths that share one core.</p>
+<ol>
+<li><strong>Improve path (F1–F4).</strong> It reads production voice sessions and compares what the agent did with a reference, one atomic claim at a time. It then clusters the recurring gaps, diagnoses each cluster against the agent&#39;s current configuration, drafts the fix as a diff, and writes regression tests that reproduce the gap.</li>
+<li><strong>Build path (F7).</strong> It reads SOPs, call transcripts or SME interviews and extracts steps, conditions and routing rules as claims. From those it designs topics, instructions, action specs and guardrails. Its output is a draft agent spec plus seed tests, sent through the same drafting (F3) and test generation (F4) as the Improve path.</li>
+</ol>
+<div class="table-wrap"><table><thead><tr>
+<th>Feature</th>
+<th>Question it answers</th>
+<th>Main output</th>
+</tr>
+</thead><tbody><tr>
+<td>F1 Gap mining</td>
+<td>Where does the live agent fail, again and again?</td>
+<td>Gap themes per topic, review-eligible or watchlist</td>
+</tr>
+<tr>
+<td>F2 Diagnose and propose fix</td>
+<td>Why does it fail, and what change fixes it?</td>
+<td>Typed recommendations with evidence</td>
+</tr>
+<tr>
+<td>F3 Change drafting</td>
+<td>What exactly changes?</td>
+<td><code>[[ADD]]/[[DEL]]</code> diffs to instructions, metadata and articles</td>
+</tr>
+<tr>
+<td>F4 Test generation</td>
+<td>How do we prove the fix?</td>
+<td>Testing Center test specs that fail today</td>
+</tr>
+<tr>
+<td>F7 Build from SOPs</td>
+<td>What should a new agent look like?</td>
+<td>Agent spec, topics, instructions, action stubs, seed tests</td>
+</tr>
+</tbody></table></div>
+<p><strong>Out of scope for this version:</strong></p>
+<ul>
+<li>Running tests or simulated callers automatically (F5, F6). Generated tests are loaded into Testing Center by a person.</li>
+<li>Deploying anything to production, and building Flows, Apex or prompt templates. Action specs are stubs a developer implements.</li>
+<li>Real audio. Voice is analysed from transcripts and trace timing; TTS and ASR testing come later.</li>
+<li>Any LLM other than the Copilot-hosted model.</li>
+</ul>
+<h2 id="2-design-principles">2. Design principles</h2>
+<p>The seven KGG principles still apply. Four new ones cover changing a live agent safely.</p>
+<p><strong>Inherited from KGG</strong></p>
+<ul>
+<li><strong>Claims, not documents, are the unit of comparison.</strong> A voice session is broken into atomic claims: facts, steps, routing, actions, escalations and voice behavior.</li>
+<li><strong>Deterministic code wherever a rule works; the LLM only for judgment.</strong> Filters, recurrence gating, coverage scoring, diff acceptance, test-spec validation and spec linting are plain code.</li>
+<li><strong>Never silently drop data.</strong> Every filter, exclusion and fallback is recorded with its rule.</li>
+<li><strong>Model output is untrusted.</strong> Every response is parsed defensively and validated against the evidence it was given. Invalid output degrades to a safe default.</li>
+<li><strong>Partition by topic.</strong> Each Agentforce topic, plus <code>__unrouted__</code>, is processed independently and in parallel.</li>
+<li><strong>One scope rule.</strong> Only review-eligible themes influence a recommendation, a diff or a test.</li>
+<li><strong>Resumable and auditable.</strong> Staging files checkpoint per-session results; every output row carries a <code>run_id</code>.</li>
+</ul>
+<p><strong>New for agent changes</strong></p>
+<ul>
+<li><strong>Changes are diffs, never rewrites.</strong> Every change to instructions, metadata or articles is the original plus marked additions and cross-outs. Stripping the markers must reproduce the original.</li>
+<li><strong>Tests come from ground truth.</strong> Test assertions come from the reference&#39;s claims, never from model-authored text, so a test states what the associate or SOP actually did.</li>
+<li><strong>A fix is not done until a test proves it.</strong> Each recommendation ships with tests that should fail on the current agent. This version checks that by hand; F5 will check it automatically.</li>
+<li><strong>A human approves every change.</strong> The system writes PR-ready metadata and drafts. It does not deploy, publish or activate anything.</li>
+</ul>
+<h2 id="3-system-overview">3. System overview</h2>
+<p>Adapters turn three kinds of raw input into canonical CSVs. The Improve path (F1, F2) and the Build path (F7) then both feed the same drafting (F3) and test generation (F4) stages. Everything ends in human review and a PR-ready change set; nothing is deployed.</p>
+<figure class="diagram"><svg viewBox="0 0 760 588" role="img" aria-label="Two paths feed one drafting and test stage; a human approves every change" font-size="13"><defs><marker id="ov-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--cds-chart-axis)"></path></marker></defs><text x="24" y="30" font-size="15" font-weight="600" fill="var(--cds-text-primary)">Two paths feed one drafting and test stage; a human approves every change</text><g fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"><path d="M132 100V124" marker-end="url(#ov-arrow)"></path><path d="M380 100V124" marker-end="url(#ov-arrow)"></path><path d="M628 100V124" marker-end="url(#ov-arrow)"></path><path d="M244 168V196" marker-end="url(#ov-arrow)"></path><path d="M616 168V196" marker-end="url(#ov-arrow)"></path><path d="M244 288V320" marker-end="url(#ov-arrow)"></path><path d="M616 288V320" marker-end="url(#ov-arrow)"></path><path d="M244 412V444" marker-end="url(#ov-arrow)"></path><path d="M464 466H496" marker-end="url(#ov-arrow)"></path><path d="M236 258H252" marker-end="url(#ov-arrow)"></path></g><g><rect x="24" y="56" width="216" height="44" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="132" y="82" text-anchor="middle" fill="var(--cds-text-primary)">Voice sessions + traces</text></g><g><rect x="272" y="56" width="216" height="44" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="380" y="82" text-anchor="middle" fill="var(--cds-text-primary)">Agent metadata + articles</text></g><g><rect x="520" y="56" width="216" height="44" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="628" y="82" text-anchor="middle" fill="var(--cds-text-primary)">SOPs and SME transcripts</text></g><g><rect x="24" y="124" width="712" height="44" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="380" y="150" text-anchor="middle" fill="var(--cds-text-primary)">Adapters: parse, scrub PII, write canonical CSVs</text></g><g><rect x="24" y="196" width="440" height="92" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="40" y="218" font-weight="600" fill="var(--cds-text-primary)">Improve path (live sessions)</text><rect x="40" y="236" width="196" height="44" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="138" y="262" text-anchor="middle" fill="var(--cds-text-primary)">F1 Gap mining</text><rect x="252" y="236" width="196" height="44" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="350" y="262" text-anchor="middle" fill="var(--cds-text-primary)">F2 Diagnose + propose fix</text></g><g><rect x="496" y="196" width="240" height="92" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="512" y="218" font-weight="600" fill="var(--cds-text-primary)">Build path (SOPs)</text><rect x="512" y="236" width="208" height="44" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="616" y="262" text-anchor="middle" fill="var(--cds-text-primary)">F7 Build agent spec</text></g><g><rect x="24" y="320" width="712" height="92" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="40" y="342" font-weight="600" fill="var(--cds-text-primary)">Shared stages (both paths)</text><rect x="40" y="360" width="332" height="44" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="206" y="386" text-anchor="middle" fill="var(--cds-text-primary)">F3 Change drafting: marked diffs</text><rect x="388" y="360" width="332" height="44" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="554" y="386" text-anchor="middle" fill="var(--cds-text-primary)">F4 Test generation: Testing Center specs</text></g><g><rect x="24" y="444" width="440" height="44" rx="8" fill="var(--cds-chart-categorical-1)" fill-opacity="0.12" stroke="var(--cds-chart-categorical-1)" stroke-width="2"></rect><text x="244" y="470" text-anchor="middle" font-weight="600" fill="var(--cds-text-primary)">Review: visualizer, AI findings, human decision</text></g><g><rect x="496" y="444" width="240" height="44" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="616" y="470" text-anchor="middle" fill="var(--cds-text-primary)">PR-ready change set</text><text x="616" y="506" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">never deploys to production</text></g><g><rect x="24" y="520" width="712" height="44" rx="8" fill="var(--cds-chart-reference-tint)" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="380" y="546" text-anchor="middle" fill="var(--cds-text-primary)">Shared core used by every stage: LLM client, filters, verify loop, coverage, diffing</text></g></svg></figure>
+
+
+<p>The shared core is KGG&#39;s engine made domain-agnostic. The Agentforce voice behavior lives in a domain pack (section 4), so the existing knowledge-article runs keep working on the same core.</p>
+<h2 id="4-repository-layout-and-module-map">4. Repository layout and module map</h2>
+<p>The repo splits into a domain-agnostic core and a domain pack. KGG&#39;s knowledge-article behavior becomes one pack (<code>knowledge</code>) and Agentforce voice becomes another (<code>agentforce_voice</code>), so both run on the same code.</p>
+<div class="table-wrap"><table><thead><tr>
+<th>Path</th>
+<th>Role</th>
+</tr>
+</thead><tbody><tr>
+<td><code>core/</code></td>
+<td>Domain-agnostic engine ported from KGG: LLM layer, config, filters, claim pipeline, aggregation, verification, eligibility, coverage, diffing</td>
+</tr>
+<tr>
+<td><code>domain/agentforce_voice/</code></td>
+<td>Claim kinds, change types, outcomes, prompts, stub dispatch phrases, prechecks for voice agents</td>
+</tr>
+<tr>
+<td><code>domain/knowledge/</code></td>
+<td>The existing KGG behavior as a pack (asset types, article outcomes), so knowledge runs keep working</td>
+</tr>
+<tr>
+<td><code>adapters/</code></td>
+<td>Raw exports to canonical CSVs: sessions, agent metadata, SOP corpus</td>
+</tr>
+<tr>
+<td><code>pipelines/improve/</code></td>
+<td>F1–F4 orchestration</td>
+</tr>
+<tr>
+<td><code>pipelines/build/</code></td>
+<td>F7 orchestration</td>
+</tr>
+<tr>
+<td><code>tools/visualizer/</code></td>
+<td>Static HTML review tool (themes, recommendations, diffs, tests, agent spec)</td>
+</tr>
+<tr>
+<td><code>tests/</code></td>
+<td>Offline tests on the stub backend, plus golden files</td>
+</tr>
+<tr>
+<td><code>data/&lt;dataset&gt;/{raw,processed,outputs,backup}</code></td>
+<td>Inputs, results and run snapshots (git-ignored)</td>
+</tr>
+</tbody></table></div>
+<p><strong>Module map</strong></p>
+<div class="table-wrap"><table><thead><tr>
+<th>Module</th>
+<th>Responsibility</th>
+<th>Origin</th>
+</tr>
+</thead><tbody><tr>
+<td><code>core/llm_client.py</code></td>
+<td><code>complete_json(system, user)</code>; Copilot CLI and stub backends; retry with backoff</td>
+<td>KGG <code>llm_client.py</code> + retry</td>
+</tr>
+<tr>
+<td><code>core/common.py</code></td>
+<td>Config (one <code>--config</code> for every entry point), logging, CSV helpers, run ids</td>
+<td>KGG <code>common.py</code></td>
+</tr>
+<tr>
+<td><code>core/filters.py</code></td>
+<td>Session- and claim-level rules: <code>match</code> + <code>keep_if</code></td>
+<td>KGG <code>interaction_filter.py</code>, <code>claim_filter.py</code></td>
+</tr>
+<tr>
+<td><code>core/partition.py</code></td>
+<td>Group by topic, slugs, per-topic paths, <code>--only-topic</code></td>
+<td>KGG <code>intent_split.py</code></td>
+</tr>
+<tr>
+<td><code>core/claims.py</code></td>
+<td>One LLM call per session: claims, kinds, statuses, conditions</td>
+<td>KGG <code>analyze_claims.py</code></td>
+</tr>
+<tr>
+<td><code>core/aggregate.py</code></td>
+<td>Gap pool, theme clustering, chunking above ~130 claims</td>
+<td>KGG <code>aggregate_themes.py</code> + chunking</td>
+</tr>
+<tr>
+<td><code>core/verify.py</code></td>
+<td>Prechecks, LLM critique, revise loop, finding routing</td>
+<td>KGG <code>verify_themes.py</code>, <code>verify_patterns.py</code></td>
+</tr>
+<tr>
+<td><code>core/eligibility.py</code></td>
+<td>Recurrence gate</td>
+<td>KGG <code>eligibility.py</code></td>
+</tr>
+<tr>
+<td><code>core/coverage.py</code></td>
+<td>Lexical claim-versus-text scoring over any text corpus</td>
+<td>KGG <code>article_coverage.py</code>, generalized</td>
+</tr>
+<tr>
+<td><code>core/diffing.py</code></td>
+<td><code>[[ADD]]/[[DEL]]</code> markers, acceptance check, fallback</td>
+<td>KGG drafting check, extracted</td>
+</tr>
+<tr>
+<td><code>adapters/agentforce_sessions.py</code></td>
+<td>Session and trace export to <code>sessions.csv</code>, <code>session_steps.csv</code></td>
+<td>New</td>
+</tr>
+<tr>
+<td><code>adapters/agent_metadata.py</code></td>
+<td>Retrieved metadata to <code>agent_config.csv</code>; writes diffs back to XML</td>
+<td>New</td>
+</tr>
+<tr>
+<td><code>adapters/sop_loader.py</code></td>
+<td>SOP files (docx, pdf, md, transcripts) to <code>sop_sections.csv</code></td>
+<td>New</td>
+</tr>
+<tr>
+<td><code>pipelines/improve/recommend.py</code></td>
+<td>F2: cluster, score, evidence, recommend, validate</td>
+<td>KGG <code>analyze_patterns.py</code></td>
+</tr>
+<tr>
+<td><code>pipelines/improve/draft.py</code></td>
+<td>F3: per-target drafting</td>
+<td>KGG drafting functions</td>
+</tr>
+<tr>
+<td><code>pipelines/tests/generate_tests.py</code></td>
+<td>F4: themes or spec to Testing Center test specs</td>
+<td>New</td>
+</tr>
+<tr>
+<td><code>pipelines/build/build_agent.py</code></td>
+<td>F7: SOP to agent spec</td>
+<td>New</td>
+</tr>
+<tr>
+<td><code>domain/agentforce_voice/prompts.py</code></td>
+<td>Every system and user prompt for the voice pack</td>
+<td>New, KGG prompt style</td>
+</tr>
+</tbody></table></div>
+<h2 id="5-data-contracts">5. Data contracts</h2>
+<p>Adapters own every raw format. The pipelines read only the canonical files below, so a change in an export touches one adapter. Agentforce object and field names in the sources are assumptions to confirm against our org.</p>
+<h3 id="5-1-inputs">5.1 Inputs</h3>
+<div class="table-wrap"><table><thead><tr>
+<th>File</th>
+<th>Key columns</th>
+<th>Required</th>
+<th>Source</th>
+</tr>
+</thead><tbody><tr>
+<td><code>sessions.csv</code></td>
+<td><code>session_id, topic, channel, started_ts, caller_utterances, agent_transcript, reference_type, reference_text, outcome, escalated</code></td>
+<td><code>session_id</code>, <code>agent_transcript</code></td>
+<td>Agentforce session tracing (Data Cloud export or SOQL)</td>
+</tr>
+<tr>
+<td><code>session_steps.csv</code></td>
+<td><code>session_id, turn, step_type (topic_selected, action_call, retrieval, response), name, input_json, output_json, latency_ms, error</code></td>
+<td>for routing and action claims</td>
+<td>Same trace export</td>
+</tr>
+<tr>
+<td><code>agent_config.csv</code></td>
+<td><code>element_type (agent, topic, instruction, action, article), element_id, parent_id, label, text, api_name</code></td>
+<td>yes, for F2 and F3</td>
+<td><code>sf project retrieve start</code> for the agent&#39;s GenAiPlanner/Bot, GenAiPlugin, GenAiFunction metadata, plus Knowledge articles</td>
+</tr>
+<tr>
+<td><code>retrieved_articles.csv</code></td>
+<td><code>session_id, article_id, article_title, article_text</code></td>
+<td>optional</td>
+<td>Retrieval steps in the trace</td>
+</tr>
+<tr>
+<td><code>sop_sections.csv</code></td>
+<td><code>sop_id, section_id, heading_path, text, source_file, page</code></td>
+<td>yes, for F7</td>
+<td><code>sop_loader.py</code> over docx, pdf, md or transcripts</td>
+</tr>
+</tbody></table></div>
+<p><code>reference_type</code> is one of <code>associate</code> (a human handled the same request), <code>sop</code> (the expected flow from a mapped SOP), or <code>outcome_only</code>. With <code>outcome_only</code>, only routing, action and escalation claims are judged, from the trace and the session&#39;s outcome.</p>
+<p><code>session_id</code> is the join key across the session files and to every theme. Rows without an agent transcript are dropped by the loader and counted.</p>
+<h3 id="5-2-outputs">5.2 Outputs</h3>
+<div class="table-wrap"><table><thead><tr>
+<th>File</th>
+<th>Content</th>
+<th>Feature</th>
+</tr>
+</thead><tbody><tr>
+<td><code>processed/&lt;topic&gt;/session_claims.csv</code></td>
+<td>Per-session claims, kinds, statuses and conditions (staging, checkpointed)</td>
+<td>F1</td>
+</tr>
+<tr>
+<td><code>outputs/&lt;topic&gt;/gap_themes.csv</code></td>
+<td>Themes with <code>claim_kind_mix</code>, eligibility, supporting sessions, <code>run_id</code></td>
+<td>F1</td>
+</tr>
+<tr>
+<td><code>outputs/&lt;topic&gt;/qa_report.json</code></td>
+<td>Verification iterations, findings, suppressed claims, disposition</td>
+<td>F1</td>
+</tr>
+<tr>
+<td><code>outputs/&lt;topic&gt;/recommendations.json</code></td>
+<td>Clusters, change type, outcome, targets, evidence, <code>key_facts</code>, <code>expected_behavior</code>, review status</td>
+<td>F2</td>
+</tr>
+<tr>
+<td><code>outputs/&lt;topic&gt;/drafts/</code></td>
+<td>One marked diff per target element, plus new-element drafts</td>
+<td>F3</td>
+</tr>
+<tr>
+<td><code>outputs/&lt;topic&gt;/tests/</code></td>
+<td>Test specs in Testing Center format, plus <code>tests_index.json</code> linking each test to its theme</td>
+<td>F4</td>
+</tr>
+<tr>
+<td><code>outputs/build/&lt;agent&gt;/agent_spec.yaml</code></td>
+<td>Agent, topics, instructions, action stubs, guardrails, each traced to SOP sections</td>
+<td>F7</td>
+</tr>
+<tr>
+<td><code>outputs/build/&lt;agent&gt;/metadata/</code></td>
+<td>PR-ready metadata generated from the spec</td>
+<td>F7</td>
+</tr>
+<tr>
+<td><code>outputs/_all_topics/run_summary.json</code></td>
+<td>Per-topic status and counts, exclusions</td>
+<td>All</td>
+</tr>
+</tbody></table></div>
+<h2 id="6-f1-gap-mining">6. F1 — Gap mining</h2>
+<p>F1 is KGG stage 1 with three changes: sessions replace Q&amp;A pairs, claims carry a kind, and the trace is evidence alongside the transcript. Entry point: <code>pipelines/improve/run_improve.py --stage mine</code>.</p>
+<h3 id="6-1-session-level-exclusion">6.1 Session-level exclusion</h3>
+<p><code>core/filters.py</code> drops whole sessions that carry no learnable behavior. A rule is <code>match</code> plus an optional <code>keep_if</code> rescue, applied to named fields. The first matching rule wins and is recorded in <code>excluded_sessions.csv</code>.</p>
+<div class="table-wrap"><table><thead><tr>
+<th>Rule</th>
+<th>Excludes</th>
+<th>Rescued when</th>
+</tr>
+</thead><tbody><tr>
+<td><code>caller_hangup_early</code></td>
+<td>The caller left before the first agent turn finished</td>
+<td>never</td>
+</tr>
+<tr>
+<td><code>test_or_internal</code></td>
+<td>Test numbers, internal QA callers</td>
+<td>never</td>
+</tr>
+<tr>
+<td><code>silent_or_noise</code></td>
+<td>Fewer than two caller utterances with content</td>
+<td>the trace shows an action call</td>
+</tr>
+<tr>
+<td><code>cobrowse_resolution</code> (KGG)</td>
+<td>Resolved by co-browse or screen share</td>
+<td>never</td>
+</tr>
+</tbody></table></div>
+<p>Excluding sessions lowers the recurrence denominator, as in KGG.</p>
+<h3 id="6-2-partitioning">6.2 Partitioning</h3>
+<p>Sessions are grouped by the topic the agent selected first, plus <code>__unrouted__</code> for sessions where no topic was selected or the agent fell back to a default. A session that switched topics is filed under its first topic, and each switch becomes a routing claim. <code>--only-topic</code> restricts a run.</p>
+<h3 id="6-3-claim-extraction-and-comparison-1-llm-call-per-session">6.3 Claim extraction and comparison (1 LLM call per session)</h3>
+<p>The model breaks the reference and the agent&#39;s behavior into atomic claims, each with a <strong>kind</strong>, then classifies every reference claim as <code>matched</code>, <code>missing</code>, <code>contradicted</code> or <code>condition_mismatch</code>. The trace steps are in the prompt, so routing and action claims are judged on what the agent actually did, not only on what it said.</p>
+<div class="table-wrap"><table><thead><tr>
+<th>Kind</th>
+<th>Example reference claim</th>
+<th>Judged from</th>
+</tr>
+</thead><tbody><tr>
+<td><code>fact</code></td>
+<td>&quot;The direct deposit cutoff is 2 business days before the check date&quot;</td>
+<td>Agent transcript</td>
+</tr>
+<tr>
+<td><code>step</code></td>
+<td>&quot;Ask for the last four digits of the account before reading the balance&quot;</td>
+<td>Transcript order</td>
+</tr>
+<tr>
+<td><code>routing</code></td>
+<td>&quot;This request belongs in Payroll Changes, not General FAQ&quot;</td>
+<td><code>topic_selected</code> steps</td>
+</tr>
+<tr>
+<td><code>action</code></td>
+<td>&quot;Look up the employee record with the employee id&quot;</td>
+<td><code>action_call</code> steps, inputs and errors</td>
+</tr>
+<tr>
+<td><code>escalation</code></td>
+<td>&quot;Transfer to the tax team when a state notice is involved&quot;</td>
+<td>Transfer or escalation steps</td>
+</tr>
+<tr>
+<td><code>voice_ux</code></td>
+<td>&quot;Read the amount as dollars and cents, in one short sentence&quot;</td>
+<td>Transcript, turn length, latency</td>
+</tr>
+</tbody></table></div>
+<p>With <code>reference_type = outcome_only</code> there is no reference text. The model then judges only <code>routing</code>, <code>action</code> and <code>escalation</code> claims, against the session outcome (for example, escalated or abandoned). Conditions (<code>condition</code>, <code>condition_kind</code>) are tagged per claim exactly as in KGG 7.7a. Results are checkpointed every 10 sessions; <code>--resume</code> skips finished sessions.</p>
+<h3 id="6-4-gap-pool-and-stop-claim-filter">6.4 Gap pool and stop-claim filter</h3>
+<p>Missing, contradicted and condition-mismatch claims form the pool, with ids <code>&lt;session_id&gt;::&lt;kind&gt;::&lt;index&gt;</code>. Default voice rules suppress boilerplate:</p>
+<div class="table-wrap"><table><thead><tr>
+<th>Rule</th>
+<th>Suppresses</th>
+<th>Rescued when</th>
+</tr>
+</thead><tbody><tr>
+<td><code>generic_escalation</code> (KGG)</td>
+<td>&quot;contact support&quot;</td>
+<td>it names a team or a trigger condition</td>
+</tr>
+<tr>
+<td><code>ivr_boilerplate</code></td>
+<td>menu prompts, &quot;press 1&quot;, recording notices</td>
+<td>never</td>
+</tr>
+<tr>
+<td><code>hold_and_filler</code></td>
+<td>hold notices, &quot;are you still there&quot;, &quot;one moment&quot;</td>
+<td>never</td>
+</tr>
+<tr>
+<td><code>pleasantries</code> (KGG)</td>
+<td>greetings, sign-offs</td>
+<td>off by default</td>
+</tr>
+</tbody></table></div>
+<h3 id="6-5-aggregation-verification-and-recurrence">6.5 Aggregation, verification and recurrence</h3>
+<p>Unchanged from KGG 6.5–6.7, with three additions. Aggregation is chunked when the pool exceeds about 130 claims: themes are built per chunk, then merged in one pass. Themes may mix claim kinds, and each carries <code>claim_kind_mix</code>. The critique gets one new finding code, <code>mixed_failure_modes</code>, for a theme that combines unrelated kinds, such as a routing miss with a fact miss. The recurrence gate keeps its default of 2 sessions.</p>
+<h2 id="7-f2-diagnose-and-propose-fix">7. F2 — Diagnose and propose fix</h2>
+<p>F2 is KGG stage 2 with one difference: it can recommend a change to the agent itself, not only to an article. It runs per topic on eligible themes only (KGG scope rule 7.1).</p>
+<h3 id="7-1-steps">7.1 Steps</h3>
+<ol>
+<li><strong>Rollup and coverage.</strong> As in KGG 7.2: the top sessions, plus the share of the topic&#39;s sessions that support an eligible theme.</li>
+<li><strong>Cluster themes into failure groups (1 LLM call).</strong> Groups follow the stage of the call where the failure happens: routing, verification, information gathering, action execution, answer, wrap-up and transfer. This replaces KGG&#39;s workflow-stage clusters. Unplaced themes get a single-theme cluster.</li>
+<li><strong>Score clusters.</strong> Deterministic, as in KGG 7.4, plus the kind mix and the share of sessions that escalated.</li>
+<li><strong>Config coverage (deterministic).</strong> <code>core/coverage.py</code> scores each missing claim against the texts that governed its own session: the selected topic&#39;s classification description and instructions, the descriptions of actions that were called or available, competing topics&#39; descriptions, and retrieved articles. Thresholds stay at 0.70 covered and 0.40 partial. The top five elements per cluster are kept, each with up to three excerpts.</li>
+<li><strong>Recommend (1 LLM call per topic).</strong> For each cluster: one change type, one outcome, targets from the shortlist, concrete edits, and a quoted passage wherever it says the config already states something.</li>
+<li><strong>Validate</strong> (<code>_finalize_change</code>), then <strong>applicability</strong> (KGG 7.7a, one call per cluster).</li>
+</ol>
+<h3 id="7-2-change-types-and-outcomes">7.2 Change types and outcomes</h3>
+<div class="table-wrap"><table><thead><tr>
+<th>Change type</th>
+<th>When the root cause is</th>
+<th>Outcome</th>
+<th>Required content</th>
+</tr>
+</thead><tbody><tr>
+<td><code>topic_instruction</code></td>
+<td>The topic is right, but its instructions lack or contradict the rule or step</td>
+<td><code>update_instructions</code></td>
+<td>Target topic, concrete instruction edits</td>
+</tr>
+<tr>
+<td><code>topic_scope</code></td>
+<td>The wrong topic was chosen, or none was</td>
+<td><code>fix_routing</code></td>
+<td>The selected and the correct topic; edits to one or both classification descriptions</td>
+</tr>
+<tr>
+<td><code>new_topic</code></td>
+<td>No topic fits a recurring request</td>
+<td><code>create_new</code></td>
+<td>Name, classification description, scope, instructions outline</td>
+</tr>
+<tr>
+<td><code>action_description</code></td>
+<td>The right action exists but was not called, or was called with wrong inputs</td>
+<td><code>fix_action_spec</code></td>
+<td>Target action, description and input edits</td>
+</tr>
+<tr>
+<td><code>new_action</code></td>
+<td>The step needs a system capability the agent lacks</td>
+<td><code>create_new</code></td>
+<td>Action stub: name, purpose, inputs, outputs, error cases</td>
+</tr>
+<tr>
+<td><code>guardrail</code></td>
+<td>The agent did something it must not do, or skipped a required check</td>
+<td><code>add_guardrail</code></td>
+<td>The rule text and where it applies</td>
+</tr>
+<tr>
+<td><code>voice_style</code></td>
+<td>The content was right but unusable by voice: too long, unreadable numbers, no readback</td>
+<td><code>update_instructions</code></td>
+<td>Style rule, scoped to the topic or the agent</td>
+</tr>
+<tr>
+<td><code>knowledge_article</code></td>
+<td>A missing or wrong fact the agent should retrieve</td>
+<td>KGG outcomes: <code>update_existing</code>, <code>create_new</code>, <code>retrieval_fix</code></td>
+<td>As in KGG 7.7</td>
+</tr>
+<tr>
+<td>any</td>
+<td>The config already states it and a test guard is enough, or the theme is too thin</td>
+<td><code>add_test_only</code>, <code>fold_into_main</code></td>
+<td>A quoted passage, or the host cluster</td>
+</tr>
+</tbody></table></div>
+<h3 id="7-3-validation-rules-model-output-is-a-proposal">7.3 Validation rules (model output is a proposal)</h3>
+<ul>
+<li>Targets are kept only if their <code>element_id</code> is in the shortlist given to the model.</li>
+<li><code>fix_routing</code> must name two topics, the one selected and the correct one, and both must exist in <code>agent_config.csv</code>. Otherwise it becomes <code>create_new</code> with change type <code>new_topic</code>.</li>
+<li><code>fix_action_spec</code> must target an action available to the selected topic. Otherwise it becomes a <code>new_action</code> stub.</li>
+<li><code>add_test_only</code> needs a quoted passage that occurs verbatim in the cited element. Otherwise it becomes <code>update_instructions</code>.</li>
+<li>Any outcome with no concrete edit or stub falls back to <code>update_instructions</code> on the selected topic and is flagged <code>needs_review</code>.</li>
+<li><code>key_facts</code> is always the cluster&#39;s missing-claim texts. <code>expected_behavior</code> is always built in code from claim kinds: expected topic from routing claims, expected actions from action claims, required statements from fact and step claims.</li>
+<li><strong>Scope gate</strong> as in KGG 7.7a: a target labelled <code>different</code> is dropped. A <code>broader</code> target, such as an agent-wide instruction, gets a scoped condition instead of a global rule.</li>
+</ul>
+<h2 id="8-f3-change-drafting">8. F3 — Change drafting</h2>
+<p>F3 turns every recommendation into a reviewable diff on the exact element it changes. It uses one mechanism for every target type: KGG&#39;s <code>[[ADD]]</code>/<code>[[DEL]]</code> markers plus the acceptance check, extracted into <code>core/diffing.py</code>.</p>
+<h3 id="8-1-drafting-per-target">8.1 Drafting per target</h3>
+<div class="table-wrap"><table><thead><tr>
+<th>Target</th>
+<th>Model receives</th>
+<th>Model returns</th>
+<th>Notes</th>
+</tr>
+</thead><tbody><tr>
+<td>Topic instructions</td>
+<td>All of the topic&#39;s instructions, the edits, key facts, conditions</td>
+<td>The full instruction list with markers</td>
+<td>A new instruction is one <code>[[ADD]]</code> line; a stale one is wrapped in <code>[[DEL]]</code></td>
+</tr>
+<tr>
+<td>Classification description and scope</td>
+<td>Both topics&#39; descriptions (for <code>fix_routing</code>), the misrouted utterances</td>
+<td>Both descriptions with markers</td>
+<td>Must keep the two topics distinguishable (section 11)</td>
+</tr>
+<tr>
+<td>Action description and inputs</td>
+<td>The action&#39;s description and input and output descriptions</td>
+<td>Marked text per field</td>
+<td>Never changes the API name, types or the implementation</td>
+</tr>
+<tr>
+<td>Guardrail and voice style</td>
+<td>The agent-level or topic-level instructions</td>
+<td>A marked addition, scoped by a condition</td>
+<td>Voice lint (8.3) runs on the result</td>
+</tr>
+<tr>
+<td>New topic, new action stub</td>
+<td>Title, outline, key facts, expected behavior</td>
+<td>Markdown plus a YAML block</td>
+<td>Uses <code>[TBD: ...]</code> wherever facts are missing</td>
+</tr>
+<tr>
+<td>Knowledge article</td>
+<td>As in KGG 7.8 and 7.9</td>
+<td>As in KGG</td>
+<td>Unchanged</td>
+</tr>
+</tbody></table></div>
+<h3 id="8-2-acceptance-check-and-fallback">8.2 Acceptance check and fallback</h3>
+<p>A draft is accepted only if it contains at least one marker, and only if removing the ADD blocks and unwrapping the DEL blocks reproduces the original text, ignoring whitespace. If it fails, the code appends the edits as a marked section at the end of the original and sets <code>draft_status = fallback</code>. This status is recorded on every draft, which fixes the KGG gap where fallbacks were not tracked.</p>
+<h3 id="8-3-voice-lint-deterministic">8.3 Voice lint (deterministic)</h3>
+<p>It runs on every added text that the agent could speak.</p>
+<ul>
+<li>An instruction that would make the agent speak a turn of more than about 40 words, or more than two sentences, gets a minor finding.</li>
+<li>Raw figures that TTS reads badly get a minor finding: unformatted currency, long digit strings, unexpanded acronyms not on an allowlist, or dates like <code>11/03</code>.</li>
+<li>An added instruction that asks the caller for more than one item in a single turn gets a minor finding.</li>
+</ul>
+<p>The thresholds are in config.</p>
+<h3 id="8-4-metadata-round-trip">8.4 Metadata round trip</h3>
+<p><code>adapters/agent_metadata.py</code> applies an accepted draft back onto the retrieved metadata files. It writes the text without markers into the right XML field and leaves every other byte unchanged. The output goes to <code>drafts/&lt;element&gt;/metadata/</code> as a PR-ready change set. A round-trip test confirms that parsing and writing an unchanged file gives identical bytes.</p>
+<h2 id="9-f4-test-generation">9. F4 — Test generation</h2>
+<p>F4 writes regression tests for two callers. For the Improve path, a test per eligible theme that reproduces the gap. For the Build path, seed tests per topic in the agent spec. Entry point: <code>pipelines/tests/generate_tests.py --from themes|spec</code>.</p>
+<h3 id="9-1-what-a-test-case-holds">9.1 What a test case holds</h3>
+<div class="table-wrap"><table><thead><tr>
+<th>Field</th>
+<th>Source</th>
+<th>Who writes it</th>
+</tr>
+</thead><tbody><tr>
+<td><code>utterance</code> (first caller turn, plus optional follow-up turns)</td>
+<td>Paraphrased from the theme&#39;s real caller utterances; for F7, from SOP trigger phrases</td>
+<td>LLM, checked by code</td>
+</tr>
+<tr>
+<td><code>expected_topic</code></td>
+<td>Routing claims, or the recommendation&#39;s correct topic</td>
+<td>Code</td>
+</tr>
+<tr>
+<td><code>expected_actions</code></td>
+<td>Action claims (name, and key inputs when stated)</td>
+<td>Code</td>
+</tr>
+<tr>
+<td><code>expected_response</code></td>
+<td>Fact and step claims, written as required statements</td>
+<td>Code (<code>expected_behavior</code>)</td>
+</tr>
+<tr>
+<td><code>must_not</code></td>
+<td>Contradicted claims and guardrails (for example, &quot;never read the full account number&quot;)</td>
+<td>Code</td>
+</tr>
+<tr>
+<td><code>conditions</code></td>
+<td>Applicability constraints (for example, &quot;caller not verified&quot;)</td>
+<td>Code, from 7.3</td>
+</tr>
+<tr>
+<td><code>trace</code></td>
+<td><code>theme_id</code>, <code>session_ids</code>, <code>run_id</code>, recommendation id</td>
+<td>Code</td>
+</tr>
+</tbody></table></div>
+<p>Only the utterance is model-written. Every assertion is copied from claims, which makes the tests ground truth (section 2).</p>
+<h3 id="9-2-utterance-generation-1-llm-call-per-theme">9.2 Utterance generation (1 LLM call per theme)</h3>
+<p>The model gets the theme&#39;s real caller utterances. It returns three to five spoken-style variants: short, rambling, with a disfluency, and with the key detail late. Code then removes PII: names, numbers and account fragments are replaced with typed placeholders from a synthetic-data table. It also drops near-duplicates (token Jaccard of 0.8 or more) and keeps at most five per theme.</p>
+<h3 id="9-3-output-format">9.3 Output format</h3>
+<p>Tests are written in the Agentforce Testing Center format: one test definition per topic, one test case per utterance. The writer is a thin serializer behind an interface, so the exact Testing Center schema is isolated in one module. <code>tests_index.json</code> maps each test case to its theme and recommendation so the visualizer can show them together.</p>
+<h3 id="9-4-prechecks-deterministic">9.4 Prechecks (deterministic)</h3>
+<ul>
+<li><code>expected_topic</code> and every <code>expected_actions</code> entry must exist in <code>agent_config.csv</code>, or in the F7 spec.</li>
+<li>Every expected-response and <code>must_not</code> assertion must equal a source claim&#39;s text, or be a substring of it.</li>
+<li>Variants that match a different theme&#39;s utterances more closely than their own are flagged <code>ambiguous_utterance</code>.</li>
+<li>An improve-path test should fail on the current agent. This version cannot run tests, so it marks each test <code>expected_to_fail_today = true</code> for a person to confirm. F5 will check it automatically.</li>
+</ul>
+<h2 id="10-f7-build-agent-from-sops">10. F7 — Build agent from SOPs</h2>
+<p>F7 runs the claim machinery the other way round. It extracts the claims an SOP makes, then clusters them into topics instead of gaps. Each topic gets instructions, action stubs, guardrails and seed tests. Every element of the spec is traced to the SOP sections it came from. Entry point: <code>pipelines/build/build_agent.py --sops &lt;dir&gt; --agent-name &lt;name&gt;</code>.</p>
+<figure class="diagram"><svg viewBox="0 0 760 320" role="img" aria-label="Every topic must pass the build prechecks before the spec is written" font-size="13"><defs><marker id="f7-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--cds-chart-axis)"></path></marker></defs><text x="24" y="28" font-size="15" font-weight="600" fill="var(--cds-text-primary)">Every topic must pass the build prechecks before the spec is written</text><g fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"><path d="M176 114H200" marker-end="url(#f7-arrow)"></path><path d="M352 114H376" marker-end="url(#f7-arrow)"></path><path d="M528 114H552" marker-end="url(#f7-arrow)"></path><path d="M628 142V196" marker-end="url(#f7-arrow)"></path><path d="M564 236H500" marker-end="url(#f7-arrow)"></path><path d="M692 236H728V66H452V86" marker-end="url(#f7-arrow)"></path></g><g><rect x="24" y="86" width="152" height="56" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="100" y="110" text-anchor="middle" font-weight="600" fill="var(--cds-text-primary)">Load SOPs</text><text x="100" y="128" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">sections + page refs</text></g><g><rect x="200" y="86" width="152" height="56" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="276" y="110" text-anchor="middle" font-weight="600" fill="var(--cds-text-primary)">Extract claims</text><text x="276" y="128" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">quote must match</text></g><g><rect x="376" y="86" width="152" height="56" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="452" y="110" text-anchor="middle" font-weight="600" fill="var(--cds-text-primary)">Cluster topics</text><text x="452" y="128" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">reuses aggregation</text></g><g><rect x="552" y="86" width="152" height="56" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="628" y="110" text-anchor="middle" font-weight="600" fill="var(--cds-text-primary)">Design topics</text><text x="628" y="128" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">instructions, stubs</text></g><g><polygon points="564,236 628,196 692,236 628,276" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></polygon><text x="628" y="240" text-anchor="middle" fill="var(--cds-text-primary)">Prechecks pass?</text></g><g><rect x="220" y="208" width="280" height="56" rx="8" fill="var(--cds-chart-categorical-1)" fill-opacity="0.12" stroke="var(--cds-chart-categorical-1)" stroke-width="2"></rect><text x="360" y="232" text-anchor="middle" font-weight="600" fill="var(--cds-text-primary)">Agent spec + metadata + seed tests</text><text x="360" y="250" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">F3 diffs if the agent already exists</text></g><text x="532" y="228" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">yes</text><text x="720" y="58" text-anchor="end" font-size="11.5" fill="var(--cds-text-secondary)">no: major findings, up to 2 rounds</text><text x="360" y="288" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">every spec node links to its SOP quote</text></svg></figure>
+
+
+<p>A topic that fails a major precheck goes back to clustering, at most twice. A topic still failing after that is written but flagged <code>needs_review</code>.</p>
+<h3 id="10-1-steps">10.1 Steps</h3>
+<ol>
+<li><strong>Load SOPs</strong> (<code>sop_loader.py</code>). Converts docx, pdf, md and transcripts into sections that keep their heading path and page. Images and tables become text with a <code>[TABLE]</code> or <code>[FIGURE]</code> note; a figure that cannot be read is listed in the QA report.</li>
+<li><strong>Extract procedure claims (1 LLM call per section).</strong> Kinds: <code>trigger</code> (what a caller asks for), <code>step</code>, <code>condition</code>, <code>fact</code>, <code>action_need</code> (needs data or a system), <code>routing</code> (hand-off to a person or team), <code>prohibition</code> (must never), <code>voice_ux</code>. Each claim keeps <code>sop_id</code>, <code>section_id</code> and a verbatim quote, and code drops any claim whose quote is not in the section.</li>
+<li><strong>Cluster into topics (reusing <code>core/aggregate.py</code>).</strong> Triggers plus their steps are grouped into job-to-be-done topics. Steps in different topics are cross-checked so that one step lives in one place. The verify loop applies, with build-specific findings (section 11).</li>
+<li><strong>Design each topic (1 LLM call per topic).</strong> It returns a classification description, scope (in and out), ordered instructions written from steps and conditions, guardrails from prohibitions, and voice rules.</li>
+<li><strong>Derive action stubs (deterministic grouping plus 1 LLM call).</strong> Matching <code>action_need</code> claims are merged into one stub with name, purpose, inputs, outputs and error cases. Stubs are matched against existing actions in <code>agent_config.csv</code> when an org is connected, and a match is reused, not duplicated.</li>
+<li><strong>Agent-level settings.</strong> Greeting, identity verification, transfer rules, global guardrails and voice style come from claims that apply across topics.</li>
+<li><strong>Seed tests (F4 <code>--from spec</code>).</strong> Three to five tests per topic from triggers and steps, plus one negative routing test per pair of neighboring topics.</li>
+<li><strong>Write outputs.</strong> <code>agent_spec.yaml</code> (human-readable, the reviewed artifact) and PR-ready metadata generated from it. When the agent already exists, each element is written as an F3 diff against it instead of new files.</li>
+</ol>
+<h3 id="10-2-build-specific-prechecks">10.2 Build-specific prechecks</h3>
+<div class="table-wrap"><table><thead><tr>
+<th>Check</th>
+<th>Severity</th>
+<th>Rule</th>
+</tr>
+</thead><tbody><tr>
+<td><code>sop_step_uncovered</code></td>
+<td>major</td>
+<td>Every <code>step</code>, <code>condition</code> and <code>prohibition</code> claim appears in some instruction, guardrail or stub</td>
+</tr>
+<tr>
+<td><code>topic_overlap</code></td>
+<td>major</td>
+<td>Two classification descriptions overlap 0.6 or more by token Jaccard, or a test utterance fits both</td>
+</tr>
+<tr>
+<td><code>orphan_action</code></td>
+<td>minor</td>
+<td>A stub no instruction refers to</td>
+</tr>
+<tr>
+<td><code>ungrounded_instruction</code></td>
+<td>major</td>
+<td>An instruction with a figure, rule or path that no claim states</td>
+</tr>
+<tr>
+<td><code>condition_lost</code></td>
+<td>major</td>
+<td>A claim with a condition appears in an instruction without that condition</td>
+</tr>
+<tr>
+<td><code>sop_conflict</code></td>
+<td>major</td>
+<td>Two SOP sections give different outcomes for the same trigger; this is surfaced for a policy owner, never resolved by the model</td>
+</tr>
+<tr>
+<td><code>voice_lint</code></td>
+<td>minor</td>
+<td>The F3 voice lint, applied to instructions and greetings</td>
+</tr>
+</tbody></table></div>
+<p>Major findings send their topic back to step 3 or 4 within the iteration budget (default 2). Remaining majors leave the spec at <code>needs_review</code>.</p>
+<h2 id="11-ai-review-extensions">11. AI review extensions</h2>
+<p>The KGG review structure stays the same: free deterministic prechecks, one LLM critique per topic, and only major findings trigger a revision, routed to the step that can fix them. Every KGG finding code carries over. The new codes are below.</p>
+<div class="table-wrap"><table><thead><tr>
+<th>Code</th>
+<th>Feature</th>
+<th>Severity</th>
+<th>Raised when</th>
+<th>Routed to</th>
+</tr>
+</thead><tbody><tr>
+<td><code>mixed_failure_modes</code></td>
+<td>F1</td>
+<td>major (critique)</td>
+<td>A theme combines unrelated claim kinds</td>
+<td>Re-aggregate</td>
+</tr>
+<tr>
+<td><code>wrong_change_type</code></td>
+<td>F2</td>
+<td>major</td>
+<td>For example, <code>topic_instruction</code> chosen while the trace shows the wrong topic was selected</td>
+<td>Re-recommend</td>
+</tr>
+<tr>
+<td><code>routing_without_competitor</code></td>
+<td>F2</td>
+<td>major</td>
+<td><code>fix_routing</code> without the topic that was wrongly chosen</td>
+<td>Re-recommend</td>
+</tr>
+<tr>
+<td><code>nonexistent_target</code></td>
+<td>F2</td>
+<td>major</td>
+<td>Target topic or action not in the config</td>
+<td>Re-recommend</td>
+</tr>
+<tr>
+<td><code>global_rule_for_local_gap</code></td>
+<td>F2</td>
+<td>minor</td>
+<td>An agent-wide instruction for a gap seen in one topic</td>
+<td>Note</td>
+</tr>
+<tr>
+<td><code>marker_check_failed</code></td>
+<td>F3</td>
+<td>minor</td>
+<td>Draft fell back to an appended section</td>
+<td>Redraft</td>
+</tr>
+<tr>
+<td><code>voice_lint</code></td>
+<td>F3, F7</td>
+<td>minor</td>
+<td>Voice lint findings (8.3)</td>
+<td>Note</td>
+</tr>
+<tr>
+<td><code>ungrounded_edit</code> (KGG)</td>
+<td>F3, F7</td>
+<td>major</td>
+<td>Figures, paths or rules in a draft that no claim or original text states</td>
+<td>Redraft</td>
+</tr>
+<tr>
+<td><code>ungrounded_assertion</code></td>
+<td>F4</td>
+<td>major</td>
+<td>A test assertion not equal to a claim</td>
+<td>Regenerate tests</td>
+</tr>
+<tr>
+<td><code>ambiguous_utterance</code></td>
+<td>F4</td>
+<td>minor</td>
+<td>A variant fits another theme or topic better</td>
+<td>Regenerate tests</td>
+</tr>
+<tr>
+<td><code>sop_step_uncovered</code>, <code>topic_overlap</code>, <code>condition_lost</code>, <code>sop_conflict</code>, <code>ungrounded_instruction</code></td>
+<td>F7</td>
+<td>major</td>
+<td>See 10.2</td>
+<td>Re-cluster or re-design the topic</td>
+</tr>
+</tbody></table></div>
+<p>The critique prompt gains three questions. Does the chosen change type match what the trace shows? Would the drafted instruction change what the agent says or does in the cited sessions? Would the tests fail today and pass after the change?</p>
+<p>The verdict rules are as in KGG: each recommendation and the topic as a whole are <code>accepted</code> or <code>needs_review</code>, and the LLM&#39;s own verdict is recorded but never flips the status.</p>
+<h2 id="12-review-tooling">12. Review tooling</h2>
+<p>The KGG recommendation visualizer stays a static, self-contained HTML file. It gains four views, all keyed by <code>run_id</code>.</p>
+<ul>
+<li><strong>Filters:</strong> topic, change type, outcome, review status, <code>draft_status</code>.</li>
+<li><strong>Diff pane:</strong> instruction, description and metadata diffs, with additions in green and cross-outs in red beside the evidence claim and sessions.</li>
+<li><strong>Test pane:</strong> the theme&#39;s test cases, with assertions linked to the claims they came from and the <code>expected_to_fail_today</code> flag for a reviewer to confirm.</li>
+<li><strong>Agent spec tree (F7):</strong> agent, then topics, then instructions, guardrails, actions and tests. Each node links to its SOP quote, and findings are shown on the node.</li>
+</ul>
+<p>Reviewer decisions (accept, reject, edit, notes) export as JSON, and <code>merge_feedback.py</code> folds them back. Accepted changes are then bundled by <code>tools/export_changeset.py</code> into one metadata change set per topic, ready for a PR.</p>
+<h2 id="13-configuration-and-failure-model">13. Configuration and failure model</h2>
+<p>There is one config file for every entry point: <code>--config</code> is required, and its timeouts and thresholds apply to every stage. This removes the KGG gotcha where <code>analyze_patterns.py</code> ignored the config.</p>
+<div class="table-wrap"><table><thead><tr>
+<th>Setting</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead><tbody><tr>
+<td><code>domain</code></td>
+<td><code>agentforce_voice</code></td>
+<td><code>knowledge</code> reproduces KGG</td>
+</tr>
+<tr>
+<td><code>backend</code> / <code>model</code></td>
+<td><code>copilot</code> / <code>auto</code></td>
+<td><code>stub</code> for tests</td>
+</tr>
+<tr>
+<td><code>timeout_seconds</code></td>
+<td>180 per call; 900 aggregate; 600 recommend and draft</td>
+<td>Per stage</td>
+</tr>
+<tr>
+<td><code>retries</code> / <code>backoff_seconds</code></td>
+<td>3 / 2, 8, 30</td>
+<td>New: retries network and auth-validation errors only</td>
+</tr>
+<tr>
+<td><code>max_workers</code></td>
+<td>4</td>
+<td>Per-topic parallelism</td>
+</tr>
+<tr>
+<td><code>min_sessions_for_review</code></td>
+<td>2</td>
+<td>Recurrence gate</td>
+</tr>
+<tr>
+<td><code>aggregate_chunk_size</code></td>
+<td>120 claims</td>
+<td>New</td>
+</tr>
+<tr>
+<td><code>max_verify_iterations</code> / <code>max_pattern_iterations</code> / <code>max_build_iterations</code></td>
+<td>2 / 2 / 2</td>
+<td>0 means flag only</td>
+</tr>
+<tr>
+<td><code>voice_lint</code></td>
+<td>40 words, 2 sentences, acronym allowlist</td>
+<td>Thresholds</td>
+</tr>
+<tr>
+<td><code>exclude_sessions</code>, <code>ignore_claims</code></td>
+<td>Defaults in 6.1 and 6.4</td>
+<td><code>mode: extend</code> or <code>replace</code></td>
+</tr>
+</tbody></table></div>
+<p><strong>Failure model.</strong> As in KGG 4.3, failures are handled at the lowest sensible level.</p>
+<div class="table-wrap"><table><thead><tr>
+<th>Call</th>
+<th>On failure</th>
+</tr>
+</thead><tbody><tr>
+<td>Per-session claims</td>
+<td>Retried, then logged and skipped</td>
+</tr>
+<tr>
+<td>Per-SOP-section claims</td>
+<td>Retried, then logged and skipped; listed as uncovered</td>
+</tr>
+<tr>
+<td>Aggregation</td>
+<td>Retried, then the topic is marked failed and other topics continue</td>
+</tr>
+<tr>
+<td>Critique</td>
+<td>Treated as <code>pass</code>, disposition <code>accepted_review_failed</code></td>
+</tr>
+<tr>
+<td>Draft</td>
+<td>Fallback marked section, <code>draft_status = fallback</code></td>
+</tr>
+<tr>
+<td>Utterance generation</td>
+<td>The theme&#39;s real utterances (PII-scrubbed) are used as-is</td>
+</tr>
+<tr>
+<td>Topic design (F7)</td>
+<td>Topic marked failed; spec written without it and flagged</td>
+</tr>
+</tbody></table></div>
+<p>A run exits non-zero if any topic failed. Reports are written only on success, so an earlier report survives.</p>
+<h2 id="14-safety-and-governance">14. Safety and governance</h2>
+<ul>
+<li><strong>No production writes.</strong> The system has no credentials for production orgs. Metadata retrieval uses a read-only integration user. Output is files and a PR, never a deploy or an activation.</li>
+<li><strong>PII.</strong> Transcripts are scrubbed for PII in the adapter before any LLM call. Names, phone numbers, account and card fragments, SSNs and addresses become typed placeholders, and the raw files never leave the restricted data folder. Test utterances use synthetic values only.</li>
+<li><strong>Grounding.</strong> Every instruction, edit and assertion is traced to a claim, and every claim to a quote in a session or an SOP. Ungrounded content is a major finding.</li>
+<li><strong>Policy conflicts.</strong> Conflicting sources (<code>contradiction</code>, <code>sop_conflict</code>) are surfaced to a named policy owner and never resolved by the model.</li>
+<li><strong>Audit.</strong> <code>run_id</code>, model, prompt version and config hash are stored on every output row.</li>
+</ul>
+<h2 id="15-testing-strategy-and-pilot">15. Testing strategy and pilot</h2>
+<p><strong>Offline suite (stub backend), in the KGG style.</strong> Each module has tests that assert its output contract.</p>
+<ul>
+<li>Adapters: messy trace exports, header drift, PII scrubbing, metadata round trip (byte-identical when unchanged), SOP loading of docx, pdf and md.</li>
+<li>F1: topic partitioning with <code>__unrouted__</code>; claim kinds from trace steps; voice stop-claim rules with <code>keep_if</code> rescue; chunked aggregation; recurrence gate.</li>
+<li>F2: config coverage against instructions; every validation fallback in 7.3; scope gate.</li>
+<li>F3: marker acceptance and fallback per target type; voice lint thresholds.</li>
+<li>F4: assertions equal claim text; unknown topic or action rejected; PII-free utterances; dedup.</li>
+<li>F7: uncovered SOP step, topic overlap, lost condition, ungrounded instruction and SOP conflict are each caught; the iteration budget stops.</li>
+<li>Golden files: one small anonymized dataset per path, with expected outputs checked in.</li>
+</ul>
+<p>The stub dispatch phrases in <code>domain/agentforce_voice/prompts.py</code> form an interface, as in KGG, and a test fails if they drift.</p>
+<p><strong>Pilot.</strong></p>
+<ol>
+<li><strong>Improve:</strong> one topic, 50 to 100 sessions. Exit criteria: reviewers accept at least half of the recommendations without major edits; generated tests fail on today&#39;s agent; after a reviewer applies one fix by hand in a sandbox, its tests pass.</li>
+<li><strong>Build:</strong> one SOP set for a small agent of 3 to 5 topics. Exit criteria: no uncovered SOP steps; reviewers accept the topic split; seed tests pass in a sandbox after the spec is deployed there by hand.</li>
+</ol>
+<h2 id="16-open-decisions-and-risks">16. Open decisions and risks</h2>
+<ul>
+<li class="task"><span class="box" aria-hidden="true"></span><strong>Code base:</strong> port KGG into this repo as <code>core/</code> plus a <code>knowledge</code> pack, or rebuild from the design doc? This design assumes the port.</li>
+<li class="task"><span class="box" aria-hidden="true"></span><strong>Session data access:</strong> Data Cloud export, SOQL or CSV, and who provides the read-only integration user.</li>
+<li class="task"><span class="box" aria-hidden="true"></span><strong>Reference for &quot;correct&quot;:</strong> associate calls, SOPs mapped to topics, or outcome only. This decides how many claim kinds F1 can judge.</li>
+<li class="task"><span class="box" aria-hidden="true"></span><strong>Agent definition format:</strong> classic topic and action metadata, or Agent Script. Only <code>agent_metadata.py</code> and the F7 writer depend on it.</li>
+<li class="task"><span class="box" aria-hidden="true"></span><strong>Testing Center format and version</strong> to target in F4.</li>
+<li class="task"><span class="box" aria-hidden="true"></span><strong>LLM budget:</strong> Copilot CLI throughput for per-session and per-section calls at production volume.</li>
+</ul>
+<p><strong>Risks</strong></p>
+<div class="table-wrap"><table><thead><tr>
+<th>Risk</th>
+<th>Effect</th>
+<th>Mitigation</th>
+</tr>
+</thead><tbody><tr>
+<td>Trace data is incomplete or not exported</td>
+<td>Routing and action claims cannot be judged</td>
+<td>Fall back to transcript-only claims; flag the topic as low-evidence</td>
+</tr>
+<tr>
+<td>Lexical coverage misses paraphrases</td>
+<td>Wrong change type (KGG limitation)</td>
+<td>The LLM must quote; <code>wrong_change_type</code> critique</td>
+</tr>
+<tr>
+<td>Generated instructions bloat topics</td>
+<td>Worse routing and latency</td>
+<td>Voice lint, <code>global_rule_for_local_gap</code>, reviewer diff view</td>
+</tr>
+<tr>
+<td>SOPs are outdated or conflict</td>
+<td>F7 builds the wrong behavior</td>
+<td><code>sop_conflict</code> surfaced to the policy owner; every spec node links to its quote</td>
+</tr>
+<tr>
+<td>High <code>needs_review</code> rate, as in KGG (70 of 122)</td>
+<td>Reviewer fatigue</td>
+<td>Only majors block; sort by sessions affected; pilot tunes thresholds</td>
+</tr>
+</tbody></table></div>
+</main></div>
+<footer><div class="inner">Generated from <code>docs/ghostwriter/*.md</code> by <code>tools/docs-html/build.mjs</code>. Edit the Markdown, then rebuild.</div></footer>
+</body>
+</html>

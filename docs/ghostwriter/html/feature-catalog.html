@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ghostwriter for Agentforce Voice: Feature Catalog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--cds-chart-axis:#8A8A8A;--cds-chart-grid:#E2E2E2;--cds-chart-categorical-1:#D0271D;--cds-text-primary:#1F1F1F;--cds-text-secondary:#5C5C5C;--cds-chart-reference-tint:#F6F6F6;--red:#D0271D;--red-dark:#A41F17;--red-tint:#FBEAE9;--ink:#1F1F1F;--muted:#5C5C5C;--line:#E2E2E2;--surface:#F6F6F6;--bg:#FFFFFF;}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Roboto,"Segoe UI",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--red-dark);text-decoration:none}a:hover{text-decoration:underline}
+.topbar{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line)}
+.topbar .accent{height:4px;background:var(--red)}
+.topbar .inner{max-width:1240px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;color:var(--ink)}
+.brand .mark{width:28px;height:28px;border-radius:6px;background:var(--red);color:#fff;display:grid;place-items:center;font-size:15px;font-weight:700}
+.brand small{font-weight:400;color:var(--muted);font-size:14px}
+nav.main{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+nav.main a{color:var(--ink);padding:6px 12px;border-radius:999px;font-size:14px;font-weight:500}
+nav.main a:hover{background:var(--surface);text-decoration:none}
+nav.main a.active{background:var(--red);color:#fff}
+.layout{max-width:1240px;margin:0 auto;padding:32px 24px 64px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:48px}
+aside.toc{position:sticky;top:84px;align-self:start;max-height:calc(100vh - 100px);overflow:auto;font-size:13.5px;border-left:2px solid var(--line);padding-left:14px}
+aside.toc .label{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+aside.toc a{display:block;color:var(--muted);padding:3px 0;line-height:1.35}
+aside.toc a.l3{padding-left:12px;font-size:13px}
+aside.toc a:hover{color:var(--red-dark);text-decoration:none}
+main{min-width:0}
+main h1{font-size:34px;line-height:1.2;margin:0 0 8px;letter-spacing:-.01em}
+.byline{color:var(--muted);font-size:14px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+main h2{font-size:24px;margin:44px 0 12px;padding-top:8px;scroll-margin-top:90px;position:relative}
+main h2::before{content:"";position:absolute;left:-16px;top:16px;width:4px;height:22px;background:var(--red);border-radius:2px}
+main h3{font-size:18.5px;margin:28px 0 8px;scroll-margin-top:90px}
+main p,main li{max-width:78ch}
+code{font:13.5px/1.4 "Roboto Mono",Consolas,monospace;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:1px 5px;word-break:break-word}
+.table-wrap{overflow-x:auto;margin:16px 0 20px;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{background:var(--ink);color:#fff;text-align:left;font-weight:600;padding:10px 12px;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tbody tr:nth-child(even) td{background:var(--surface)}
+td code{font-size:12.5px}
+blockquote{margin:16px 0;padding:10px 16px;border-left:4px solid var(--red);background:var(--red-tint);border-radius:0 6px 6px 0}
+li.task{list-style:none;margin-left:-22px;display:flex;gap:10px;align-items:flex-start}
+li.task .box{flex:none;width:16px;height:16px;margin-top:4px;border:2px solid var(--red);border-radius:3px}
+li.task .box.on{background:var(--red)}
+.diagram{margin:20px 0 24px;padding:20px;border:1px solid var(--line);border-radius:10px;background:var(--bg);overflow-x:auto;text-align:center}
+.diagram{max-width:860px}.diagram svg{width:100%;height:auto;font-family:inherit}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+footer .inner{max-width:1240px;margin:0 auto;padding:20px 24px}
+.hero{background:linear-gradient(0deg,var(--surface),var(--surface));border-bottom:1px solid var(--line)}
+.hero .inner{max-width:1240px;margin:0 auto;padding:56px 24px 48px}
+.hero .eyebrow{color:var(--red);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px}
+.hero h1{font-size:40px;line-height:1.15;margin:8px 0 12px;max-width:22ch}
+.hero p{font-size:18px;color:var(--muted);max-width:62ch;margin:0}
+.cards{max-width:1240px;margin:0 auto;padding:40px 24px 64px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.card{display:block;border:1px solid var(--line);border-top:4px solid var(--red);border-radius:10px;padding:24px;color:var(--ink);background:var(--bg);transition:box-shadow .15s,transform .15s}
+.card:hover{text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.08);transform:translateY(-2px)}
+.card h2{margin:0 0 8px;font-size:21px}
+.card p{margin:0 0 16px;color:var(--muted)}
+.card .go{color:var(--red-dark);font-weight:600}
+@media (max-width:900px){.layout{grid-template-columns:1fr;gap:0}aside.toc{display:none}main h2::before{display:none}.topbar .inner{padding:10px 16px}.layout,.cards,.hero .inner{padding-left:16px;padding-right:16px}main h1,.hero h1{font-size:28px}}
+@media print{.topbar,aside.toc{display:none}.layout{display:block}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="accent"></div><div class="inner">
+<a class="brand" href="index.html"><span class="mark">S</span>SutraAI <small>Ghostwriter for Agentforce Voice</small></a>
+<nav class="main"><a href="index.html">Overview</a><a href="feature-catalog.html" class="active">Feature catalog</a><a href="architecture-design-f1-f4-f7.html">Architecture and design</a></nav>
+</div></header>
+<div class="layout"><aside class="toc"><div class="label">On this page</div><a class="l2" href="#purpose-and-background">Purpose and background</a><a class="l2" href="#all-features-at-a-glance">All features at a glance</a><a class="l2" href="#feature-details">Feature details</a><a class="l3" href="#f1-production-gap-mining">F1 — Production gap mining</a><a class="l3" href="#f2-diagnose-and-propose-fix">F2 — Diagnose and propose fix</a><a class="l3" href="#f3-change-drafting-diff">F3 — Change drafting (diff)</a><a class="l3" href="#f4-test-generation">F4 — Test generation</a><a class="l3" href="#f5-simulation-and-validation">F5 — Simulation and validation</a><a class="l3" href="#f6-auto-fix-loop">F6 — Auto-fix loop</a><a class="l3" href="#f7-build-agent-from-sops">F7 — Build agent from SOPs</a><a class="l3" href="#f8-natural-language-editing">F8 — Natural-language editing</a><a class="l3" href="#f9-voice-specific-qa">F9 — Voice-specific QA</a><a class="l3" href="#f10-release-monitoring-and-experiments">F10 — Release monitoring and experiments</a><a class="l3" href="#f11-team-loop">F11 — Team loop</a><a class="l3" href="#f12-opportunity-discovery">F12 — Opportunity discovery</a><a class="l2" href="#recommended-start-and-roadmap">Recommended start and roadmap</a><a class="l2" href="#open-questions">Open questions</a><a class="l2" href="#sources">Sources</a></aside><main><h1 id="ghostwriter-for-agentforce-voice-feature-catalog">Ghostwriter for Agentforce Voice: Feature Catalog</h1>
+<div class="byline">Nov 3, 2026 · Uday Gangireddy · Live, editable version: <a href="https://claude.ai/artifact/UGEXD4f72REwqEMRsbovqc" target="_blank" rel="noopener">Claude Doc</a></div>
+<h2 id="purpose-and-background">Purpose and background</h2>
+<p>This catalog lists 12 features for an agent that builds, tests, diagnoses and improves Agentforce voice agents, so we can choose a starting set. The recommended start is F1–F4. That set reuses about 70% of the existing Knowledge Gap Generation (KGG) pipeline.</p>
+<p>Ghostwriter is a <a href="https://sierra.ai/product/ghostwriter" target="_blank" rel="noopener">Sierra</a> product, not a Cyara one. Sierra describes it as &quot;the agent that creates and optimizes other agents&quot;: it builds from SOPs and transcripts, simulates every change, diagnoses failures and proposes fixes. Cyara&#39;s AI-agent testing tools could later supply the real voice-call test layer.</p>
+<p>KGG already does the &quot;monitor → diagnose → propose fix&quot; half. It compares claims, clusters recurring gaps, gathers article evidence, recommends typed outcomes, drafts <code>[[ADD]]/[[DEL]]</code> changes and runs an AI review. The missing half is building from SOPs and simulating before release.</p>
+<h2 id="all-features-at-a-glance">All features at a glance</h2>
+<p>Four of the twelve features reuse KGG heavily. Those four form the MVP.</p>
+<div class="table-wrap"><table><thead><tr>
+<th>#</th>
+<th>Feature</th>
+<th>One-line description</th>
+<th>KGG reuse</th>
+<th>Phase</th>
+</tr>
+</thead><tbody><tr>
+<td>F1</td>
+<td>Production gap mining</td>
+<td>Find and cluster recurring failures in real voice sessions</td>
+<td>High</td>
+<td>MVP</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>Diagnose and propose fix</td>
+<td>Classify root cause and propose a typed fix per recurring failure</td>
+<td>High</td>
+<td>MVP</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>Change drafting (diff)</td>
+<td>Write each fix as a reviewable diff to articles, topics, instructions, actions</td>
+<td>High</td>
+<td>MVP</td>
+</tr>
+<tr>
+<td>F4</td>
+<td>Test generation</td>
+<td>Turn each recurring failure into regression test cases</td>
+<td>Medium</td>
+<td>MVP</td>
+</tr>
+<tr>
+<td>F5</td>
+<td>Simulation and validation</td>
+<td>Run tests and simulated callers against a sandbox agent, before and after a change</td>
+<td>Low</td>
+<td>Phase 2</td>
+</tr>
+<tr>
+<td>F6</td>
+<td>Auto-fix loop</td>
+<td>Diagnose a failed simulation, revise the fix, re-simulate within a budget</td>
+<td>Medium</td>
+<td>Phase 2</td>
+</tr>
+<tr>
+<td>F7</td>
+<td>Build agent from SOPs</td>
+<td>Generate topics, instructions, action stubs and seed tests from SOPs or transcripts</td>
+<td>Low</td>
+<td>Phase 2</td>
+</tr>
+<tr>
+<td>F9</td>
+<td>Voice-specific QA</td>
+<td>Check TTS-friendliness, length, barge-in, silence, ASR mishears, transfers</td>
+<td>Low</td>
+<td>Phase 3</td>
+</tr>
+<tr>
+<td>F10</td>
+<td>Release monitoring and experiments</td>
+<td>Confirm a shipped fix stops the gap recurring; flag regressions</td>
+<td>Medium</td>
+<td>Phase 3</td>
+</tr>
+<tr>
+<td>F11</td>
+<td>Team loop</td>
+<td>Send evidence and proposed changes to Slack or Teams for approval, then follow up</td>
+<td>Medium</td>
+<td>Phase 3</td>
+</tr>
+<tr>
+<td>F12</td>
+<td>Opportunity discovery</td>
+<td>Find intents the agent cannot route or handle at all</td>
+<td>Medium</td>
+<td>Phase 3</td>
+</tr>
+<tr>
+<td>F8</td>
+<td>Natural-language editing</td>
+<td>Turn a plain-language request into a metadata diff plus tests</td>
+<td>Low to medium</td>
+<td>Phase 4</td>
+</tr>
+</tbody></table></div>
+<h2 id="feature-details">Feature details</h2>
+<p>Each card gives what the feature does, its inputs and outputs, where it touches Agentforce, voice-specific points, what it reuses from KGG, and what it depends on. Agentforce object and metadata names are to be confirmed against our org.</p>
+<h3 id="f1-production-gap-mining">F1 — Production gap mining</h3>
+<ul>
+<li><strong>What it does:</strong> compares what the voice agent did with a reference (associate handling, SOP or expected test outcome) at the level of atomic claims. It then clusters the recurring misses into narrow themes.</li>
+<li><strong>Inputs:</strong> voice session transcripts plus traces (topic chosen, actions called, action inputs and outputs, latency); the reference answer or SOP.</li>
+<li><strong>Outputs:</strong> gap themes per topic with eligibility, supporting sessions and a QA report.</li>
+<li><strong>Agentforce touchpoints:</strong> session tracing data (Data Cloud export); partition by Agentforce topic plus an <code>__unrouted__</code> partition.</li>
+<li><strong>Voice points:</strong> new claim kinds <code>routing</code>, <code>action</code>, <code>escalation</code>, <code>voice_ux</code>; boilerplate filters for IVR prompts, hold and &quot;are you still there&quot;.</li>
+<li><strong>KGG reuse:</strong> high. Reuses <code>analyze_claims</code>, <code>claim_filter</code>, <code>interaction_filter</code>, <code>aggregate_themes</code>, <code>verify_themes</code>, <code>eligibility</code>. A new adapter is needed.</li>
+<li><strong>Depends on:</strong> access to session data.</li>
+</ul>
+<h3 id="f2-diagnose-and-propose-fix">F2 — Diagnose and propose fix</h3>
+<ul>
+<li><strong>What it does:</strong> for each eligible theme cluster, gathers evidence from the agent&#39;s current config and recommends one typed fix.</li>
+<li><strong>Inputs:</strong> eligible themes; agent config sidecar (topic scope and instructions, action descriptions, retrieved Data Library articles).</li>
+<li><strong>Outputs:</strong> recommendations with change type and outcome: <code>update_instructions</code>, <code>fix_routing</code>, <code>fix_action_spec</code>, <code>add_guardrail</code>, <code>voice_style</code>, <code>update_existing</code> or <code>create_new</code> article, <code>retrieval_fix</code>, <code>add_test_only</code>.</li>
+<li><strong>Agentforce touchpoints:</strong> GenAiPlanner/Bot, GenAiPlugin (topics) and GenAiFunction (actions) metadata, retrieved with <code>sf project retrieve start</code>.</li>
+<li><strong>Voice points:</strong> applicability constraints map onto topic conditions (for example, the caller is not verified yet).</li>
+<li><strong>KGG reuse:</strong> high. <code>article_coverage</code> becomes <code>config_coverage</code>; the <code>_finalize_article_outcome</code> validation pattern carries over.</li>
+<li><strong>Depends on:</strong> F1.</li>
+</ul>
+<h3 id="f3-change-drafting-diff">F3 — Change drafting (diff)</h3>
+<ul>
+<li><strong>What it does:</strong> writes each fix as a reviewable diff, never a silent rewrite.</li>
+<li><strong>Inputs:</strong> recommendations plus the original article, instruction or metadata text.</li>
+<li><strong>Outputs:</strong> <code>[[ADD]]/[[DEL]]</code> marked drafts that pass the check &quot;stripping the markers reproduces the original&quot;; new-article and new-topic drafts with <code>[TBD]</code> markers.</li>
+<li><strong>Agentforce touchpoints:</strong> topic instruction text, classification description, action input and output descriptions, Knowledge articles.</li>
+<li><strong>Voice points:</strong> drafts flag replies that are too long or hard for TTS to read aloud.</li>
+<li><strong>KGG reuse:</strong> high. Reuses <code>draft_updated_articles</code>, <code>draft_new_articles</code> and the acceptance check.</li>
+<li><strong>Depends on:</strong> F2.</li>
+</ul>
+<h3 id="f4-test-generation">F4 — Test generation</h3>
+<ul>
+<li><strong>What it does:</strong> turns every eligible theme into regression tests that should fail on today&#39;s agent and pass once the fix is in.</li>
+<li><strong>Inputs:</strong> themes, claims, real caller utterances.</li>
+<li><strong>Outputs:</strong> Testing Center test specs: utterance, expected topic, expected actions, expected response checks.</li>
+<li><strong>Agentforce touchpoints:</strong> Agentforce Testing Center (<code>sf agent test create</code>).</li>
+<li><strong>Voice points:</strong> paraphrased spoken-style utterances, including disfluencies and partial phrases.</li>
+<li><strong>KGG reuse:</strong> medium. The tests&#39; ground truth comes from claims, the same way <code>key_facts</code> does.</li>
+<li><strong>Depends on:</strong> F1.</li>
+</ul>
+<h3 id="f5-simulation-and-validation">F5 — Simulation and validation</h3>
+<ul>
+<li><strong>What it does:</strong> runs the generated tests and simulated multi-turn callers against a sandbox agent, before and after a change. A change is accepted only when its new tests pass and nothing else regresses.</li>
+<li><strong>Inputs:</strong> test specs, caller personas, a sandbox or scratch org with the change deployed.</li>
+<li><strong>Outputs:</strong> pass or fail per test, transcripts, a regression report, and test results as a third layer of <code>review_status</code>.</li>
+<li><strong>Agentforce touchpoints:</strong> <code>sf agent test run</code>; <code>sf agent preview</code> or the Agent API for multi-turn simulation.</li>
+<li><strong>Voice points:</strong> text-level first; real TTS and ASR calls come later through a voice test harness, possibly Cyara.</li>
+<li><strong>KGG reuse:</strong> low. A new simulator gets a pluggable interface like <code>llm_client</code>, with <code>testing_center</code>, <code>agent_api</code>, <code>voice</code> and <code>stub</code> backends.</li>
+<li><strong>Depends on:</strong> F3, F4, sandbox access.</li>
+</ul>
+<h3 id="f6-auto-fix-loop">F6 — Auto-fix loop</h3>
+<ul>
+<li><strong>What it does:</strong> when a simulation fails, diagnoses why, revises the change and simulates again, within an iteration budget.</li>
+<li><strong>Inputs:</strong> failing test transcripts, the current draft.</li>
+<li><strong>Outputs:</strong> a revised draft, iteration history, and a final verdict of <code>accepted</code> or <code>needs_review</code>.</li>
+<li><strong>Agentforce touchpoints:</strong> sandbox deploy plus test run per iteration.</li>
+<li><strong>Voice points:</strong> none specific.</li>
+<li><strong>KGG reuse:</strong> medium. The rubber-duck revise loop with major and minor finding routing carries over.</li>
+<li><strong>Depends on:</strong> F5.</li>
+</ul>
+<h3 id="f7-build-agent-from-sops">F7 — Build agent from SOPs</h3>
+<ul>
+<li><strong>What it does:</strong> generates a first agent design from SOPs, call transcripts or SME interviews.</li>
+<li><strong>Inputs:</strong> SOP documents, transcripts, audio interviews.</li>
+<li><strong>Outputs:</strong> topics with classification descriptions and instructions, action specs (stubs a human builds as Flow or Apex), and seed tests.</li>
+<li><strong>Agentforce touchpoints:</strong> <code>sf agent generate agent-spec</code>, <code>sf agent create</code>, topic and action metadata.</li>
+<li><strong>Voice points:</strong> greeting, verification, confirmation-readback and transfer patterns built in.</li>
+<li><strong>KGG reuse:</strong> low. New generation path; reuses prompts and validation patterns.</li>
+<li><strong>Depends on:</strong> F4 for seed tests; F5, in the same phase, validates what it builds.</li>
+</ul>
+<h3 id="f8-natural-language-editing">F8 — Natural-language editing</h3>
+<ul>
+<li><strong>What it does:</strong> turns a plain-language request, such as &quot;confirm the account number before transferring&quot;, into a targeted metadata diff plus tests.</li>
+<li><strong>Inputs:</strong> the request plus the current agent config.</li>
+<li><strong>Outputs:</strong> a diff, new tests, and simulation results.</li>
+<li><strong>Agentforce touchpoints:</strong> topic instructions and action metadata.</li>
+<li><strong>Voice points:</strong> none specific.</li>
+<li><strong>KGG reuse:</strong> low to medium. Reuses F3 drafting and the F5 validation gate.</li>
+<li><strong>Depends on:</strong> F3, F5.</li>
+</ul>
+<h3 id="f9-voice-specific-qa">F9 — Voice-specific QA</h3>
+<ul>
+<li><strong>What it does:</strong> checks behavior only a voice channel has.</li>
+<li><strong>Inputs:</strong> transcripts, timing data, recordings where available.</li>
+<li><strong>Outputs:</strong> voice findings such as reply too long, unreadable number or date or acronym, barge-in mishandled, silence timeout, ASR mishear not recovered, bad transfer or escalation.</li>
+<li><strong>Agentforce touchpoints:</strong> Agentforce Voice settings (voice, pronunciation, tone), transfer and escalation config.</li>
+<li><strong>Voice points:</strong> this is the voice feature.</li>
+<li><strong>KGG reuse:</strong> low. New claim types and deterministic checks (for example, word count per turn).</li>
+<li><strong>Depends on:</strong> F1.</li>
+</ul>
+<h3 id="f10-release-monitoring-and-experiments">F10 — Release monitoring and experiments</h3>
+<ul>
+<li><strong>What it does:</strong> after a change ships, reruns gap mining on post-release sessions to confirm the theme stops recurring and to flag regressions.</li>
+<li><strong>Inputs:</strong> sessions before and after a release, tagged with <code>run_id</code> and release id.</li>
+<li><strong>Outputs:</strong> a before-and-after recurrence report per theme, plus regression alerts.</li>
+<li><strong>Agentforce touchpoints:</strong> agent version and release history.</li>
+<li><strong>Voice points:</strong> none specific.</li>
+<li><strong>KGG reuse:</strong> medium. The pipeline reruns per <code>run_id</code>; the backup-snapshot comparison carries over.</li>
+<li><strong>Depends on:</strong> F1, a release history.</li>
+</ul>
+<h3 id="f11-team-loop">F11 — Team loop</h3>
+<ul>
+<li><strong>What it does:</strong> sends evidence and the proposed change to Slack or Teams, captures approve or reject, and follows the outcome.</li>
+<li><strong>Inputs:</strong> recommendations, drafts, test results.</li>
+<li><strong>Outputs:</strong> messages with a decision link, and recorded decisions.</li>
+<li><strong>Agentforce touchpoints:</strong> a PR to the metadata repo when approved; never a direct production deploy.</li>
+<li><strong>Voice points:</strong> none specific.</li>
+<li><strong>KGG reuse:</strong> medium. The recommendation visualizer&#39;s feedback export becomes a workflow.</li>
+<li><strong>Depends on:</strong> F2, F3.</li>
+</ul>
+<h3 id="f12-opportunity-discovery">F12 — Opportunity discovery</h3>
+<ul>
+<li><strong>What it does:</strong> finds calls the agent could not route at all, or that escalated with no matching topic, and proposes new topics.</li>
+<li><strong>Inputs:</strong> sessions from the <code>__unrouted__</code> partition and escalations.</li>
+<li><strong>Outputs:</strong> clusters of unmet intents with a proposed new topic and its volume.</li>
+<li><strong>Agentforce touchpoints:</strong> topic classification descriptions.</li>
+<li><strong>Voice points:</strong> none specific.</li>
+<li><strong>KGG reuse:</strong> medium. Theme clustering and the recurrence gate apply unchanged.</li>
+<li><strong>Depends on:</strong> F1.</li>
+</ul>
+<h2 id="recommended-start-and-roadmap">Recommended start and roadmap</h2>
+<p>Start with F1–F4. They run on data we already have and produce fixes plus tests that people can check by hand in Testing Center. Phase 2 automates that check in a sandbox and adds building agents from SOPs (F7). Together, that is the step that makes this a Ghostwriter.</p>
+<figure class="diagram"><svg viewBox="0 0 760 288" role="img" aria-label="Start with F1 to F4, then prove fixes in a sandbox before adding more" font-size="13"><text x="24" y="28" font-size="15" font-weight="600" fill="var(--cds-text-primary)">Start with F1–F4, then prove fixes in a sandbox before adding more</text><text x="24" y="46" font-size="11.5" fill="var(--cds-text-secondary)">Phases in order; no dates set yet</text><g><g><rect x="24" y="64" width="160" height="140" rx="8" fill="var(--cds-chart-categorical-1)" fill-opacity="0.12" stroke="var(--cds-chart-categorical-1)" stroke-width="2"></rect><line x1="40" x2="168" y1="116" y2="116" stroke="var(--cds-chart-grid)"></line></g><text x="104" y="88" text-anchor="middle" font-weight="600" fill="var(--cds-text-primary)">MVP</text><text x="104" y="106" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">Gap → fix → test</text><text x="40" y="138" font-size="11.5" fill="var(--cds-text-primary)">F1 Gap mining</text><text x="40" y="156" font-size="11.5" fill="var(--cds-text-primary)">F2 Diagnose and fix</text><text x="40" y="174" font-size="11.5" fill="var(--cds-text-primary)">F3 Change diffs</text><text x="40" y="192" font-size="11.5" fill="var(--cds-text-primary)">F4 Test generation</text></g><g><g><rect x="208" y="64" width="160" height="140" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><line x1="224" x2="352" y1="116" y2="116" stroke="var(--cds-chart-grid)"></line></g><text x="288" y="88" text-anchor="middle" font-weight="600" fill="var(--cds-text-primary)">Phase 2</text><text x="288" y="106" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">Prove and build</text><text x="224" y="138" font-size="11.5" fill="var(--cds-text-primary)">F5 Simulation</text><text x="224" y="156" font-size="11.5" fill="var(--cds-text-primary)">F6 Auto-fix loop</text><text x="224" y="174" font-size="11.5" fill="var(--cds-text-primary)">F7 Build from SOPs</text></g><g><g><rect x="392" y="64" width="160" height="140" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><line x1="408" x2="536" y1="116" y2="116" stroke="var(--cds-chart-grid)"></line></g><text x="472" y="88" text-anchor="middle" font-weight="600" fill="var(--cds-text-primary)">Phase 3</text><text x="472" y="106" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">Voice and operations</text><text x="408" y="138" font-size="11.5" fill="var(--cds-text-primary)">F9 Voice QA</text><text x="408" y="156" font-size="11.5" fill="var(--cds-text-primary)">F10 Release monitor</text><text x="408" y="174" font-size="11.5" fill="var(--cds-text-primary)">F11 Team loop</text><text x="408" y="192" font-size="11.5" fill="var(--cds-text-primary)">F12 Unmet intents</text></g><g><g><rect x="576" y="64" width="160" height="140" rx="8" fill="none" fill-opacity="1" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><line x1="592" x2="720" y1="116" y2="116" stroke="var(--cds-chart-grid)"></line></g><text x="656" y="88" text-anchor="middle" font-weight="600" fill="var(--cds-text-primary)">Phase 4</text><text x="656" y="106" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">Edit by request</text><text x="592" y="138" font-size="11.5" fill="var(--cds-text-primary)">F8 NL editing</text></g><g><g><line x1="184" x2="208" y1="134" y2="134" stroke="var(--cds-chart-axis)" stroke-width="1.25"></line><line x1="196" x2="196" y1="141" y2="218" stroke="var(--cds-chart-axis)" stroke-width="1" stroke-dasharray="3 3"></line><path d="M196 127l7 7l-7 7l-7 -7z" fill="var(--cds-chart-axis)"></path></g><text x="196" y="234" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--cds-text-primary)">Gate 1</text><text x="196" y="250" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">New tests fail today;</text><text x="196" y="266" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">humans accept fixes</text></g><g><g><line x1="368" x2="392" y1="134" y2="134" stroke="var(--cds-chart-axis)" stroke-width="1.25"></line><line x1="380" x2="380" y1="141" y2="218" stroke="var(--cds-chart-axis)" stroke-width="1" stroke-dasharray="3 3"></line><path d="M380 127l7 7l-7 7l-7 -7z" fill="var(--cds-chart-axis)"></path></g><text x="380" y="234" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--cds-text-primary)">Gate 2</text><text x="380" y="250" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">Fixes pass in sandbox,</text><text x="380" y="266" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">no regressions</text></g><g><g><line x1="552" x2="576" y1="134" y2="134" stroke="var(--cds-chart-axis)" stroke-width="1.25"></line><line x1="564" x2="564" y1="141" y2="218" stroke="var(--cds-chart-axis)" stroke-width="1" stroke-dasharray="3 3"></line><path d="M564 127l7 7l-7 7l-7 -7z" fill="var(--cds-chart-axis)"></path></g><text x="564" y="234" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--cds-text-primary)">Gate 3</text><text x="564" y="250" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">Validation gate</text><text x="564" y="266" text-anchor="middle" font-size="11.5" fill="var(--cds-text-secondary)">trusted by the team</text></g></svg></figure>
+
+
+<p>Each gate must pass before the next phase starts. F7 sits in Phase 2 next to F5, so every agent it builds is proven in the sandbox before review. F8 comes last.</p>
+<p>The first build&#39;s design (F1–F4 plus F7) is in <a href="architecture-design-f1-f4-f7.html">architecture-design-f1-f4-f7.md</a>.</p>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li class="task"><span class="box" aria-hidden="true"></span>Which features make the first version: F1–F4 as recommended, or a different set?</li>
+<li class="task"><span class="box" aria-hidden="true"></span>What is the reference for &quot;correct&quot; behavior: associate calls, SOPs, existing Testing Center cases, or a mix?</li>
+<li class="task"><span class="box" aria-hidden="true"></span>How do we get Agentforce session traces: Data Cloud export, SOQL, or a manual CSV?</li>
+<li class="task"><span class="box" aria-hidden="true"></span>Does the KGG code move into SutraAI and get generalized, or do we rebuild a domain-agnostic core from the design doc?</li>
+<li class="task"><span class="box" aria-hidden="true"></span>Which sandbox or scratch org can F5 deploy to, and who approves promotion to production?</li>
+<li class="task"><span class="box" aria-hidden="true"></span>Is Copilot CLI still the only allowed LLM, given simulated callers need many more calls?</li>
+</ul>
+<h2 id="sources">Sources</h2>
+<ul>
+<li><a href="https://sierra.ai/product/ghostwriter" target="_blank" rel="noopener">Sierra — Ghostwriter product page</a></li>
+<li>Knowledge Gap Generation design document, status 10/29/2026 (internal)</li>
+</ul>
+</main></div>
+<footer><div class="inner">Generated from <code>docs/ghostwriter/*.md</code> by <code>tools/docs-html/build.mjs</code>. Edit the Markdown, then rebuild.</div></footer>
+</body>
+</html>

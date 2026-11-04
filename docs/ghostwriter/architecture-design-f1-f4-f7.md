@@ -51,6 +51,7 @@ The seven KGG principles still apply. Four new ones cover changing a live agent 
 
 Adapters turn three kinds of raw input into canonical CSVs. The Improve path (F1, F2) and the Build path (F7) then both feed the same drafting (F3) and test generation (F4) stages. Everything ends in human review and a PR-ready change set; nothing is deployed.
 
+<!-- diagram: overview -->
 ```mermaid
 flowchart TD
   S["Voice sessions + traces"] --> AD
@@ -307,6 +308,7 @@ Tests are written in the Agentforce Testing Center format: one test definition p
 
 F7 runs the claim machinery the other way round. It extracts the claims an SOP makes, then clusters them into topics instead of gaps. Each topic gets instructions, action stubs, guardrails and seed tests. Every element of the spec is traced to the SOP sections it came from. Entry point: `pipelines/build/build_agent.py --sops <dir> --agent-name <name>`.
 
+<!-- diagram: f7-build-flow -->
 ```mermaid
 flowchart LR
   L["<b>Load SOPs</b><br/>sections + page refs"] --> E["<b>Extract claims</b><br/>quote must match"]
